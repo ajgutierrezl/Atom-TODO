@@ -8,6 +8,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { catchError, finalize, tap } from 'rxjs/operators';
 import { TaskFormComponent } from '../task-form/task-form.component';
+import { EditTaskDialogComponent } from './edit-task-dialog/edit-task-dialog.component';
 
 @Component({
   selector: 'app-task-list',
@@ -102,8 +103,37 @@ export class TaskListComponent implements OnInit {
   }
 
   onTaskEdit(task: Task): void {
-    // Implementation of the edit method
-    console.log('Editing task:', task);
+    const dialogRef = this.dialog.open(EditTaskDialogComponent, {
+      width: '500px',
+      data: { task: { ...task } }
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        this.isLoading = true;
+        
+        this.taskService.updateTask(task.id!, result).pipe(
+          finalize(() => {
+            this.isLoading = false;
+            this.loadTasks();
+          })
+        ).subscribe({
+          next: () => {
+            this.snackBar.open('Task updated successfully', 'Close', { 
+              duration: 3000,
+              panelClass: 'success-snackbar'
+            });
+          },
+          error: (error) => {
+            this.snackBar.open('Error updating task', 'Close', { 
+              duration: 3000,
+              panelClass: 'error-snackbar'
+            });
+            console.error('Error updating task:', error);
+          }
+        });
+      }
+    });
   }
 
   onTaskDelete(taskId: string): void {

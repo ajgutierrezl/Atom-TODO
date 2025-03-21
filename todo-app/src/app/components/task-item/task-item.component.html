@@ -8,7 +8,7 @@
     </mat-checkbox>
     <h3 class="task-title" [class.completed]="task.completed">{{ task.title }}</h3>
     <div class="task-actions">
-      <button mat-icon-button (click)="onTaskEdit()" aria-label="Edit task">
+      <button mat-icon-button (click)="onTaskEdit()" aria-label="Edit task" class="edit-button">
         <mat-icon>edit</mat-icon>
       </button>
       <button mat-icon-button (click)="onTaskDelete()" aria-label="Delete task" color="warn">

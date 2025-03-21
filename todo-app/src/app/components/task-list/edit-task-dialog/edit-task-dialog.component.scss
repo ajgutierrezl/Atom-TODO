@@ -1,0 +1,41 @@
+.edit-dialog-container {
+  padding: 0 16px 16px;
+}
+
+.dialog-title {
+  display: flex;
+  align-items: center;
+  color: #3f51b5;
+  margin-bottom: 16px;
+
+  .title-icon {
+    margin-right: 8px;
+  }
+}
+
+.dialog-content {
+  display: flex;
+  flex-direction: column;
+  min-width: 350px;
+  max-width: 550px;
+}
+
+.form-field {
+  width: 100%;
+  margin-bottom: 16px;
+}
+
+.completed-checkbox {
+  margin-bottom: 16px;
+}
+
+.spinner {
+  display: inline-block;
+  margin-right: 8px;
+}
+
+@media (max-width: 600px) {
+  .dialog-content {
+    min-width: 250px;
+  }
+} 

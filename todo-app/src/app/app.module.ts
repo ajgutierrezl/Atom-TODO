@@ -2,7 +2,7 @@ import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { HttpClientModule } from '@angular/common/http';
-import { ReactiveFormsModule } from '@angular/forms';
+import { ReactiveFormsModule, FormsModule } from '@angular/forms';
 
 // Angular Material
 import { MatButtonModule } from '@angular/material/button';
@@ -23,6 +23,7 @@ import { LoginComponent, UserRegisterDialogComponent } from './components/login/
 import { TaskListComponent } from './components/task-list/task-list.component';
 import { TaskFormComponent } from './components/task-form/task-form.component';
 import { TaskItemComponent } from './components/task-item/task-item.component';
+import { EditTaskDialogComponent } from './components/task-list/edit-task-dialog/edit-task-dialog.component';
 
 // Módulos
 import { AppRoutingModule } from './app-routing.module';
@@ -34,13 +35,15 @@ import { AppRoutingModule } from './app-routing.module';
     UserRegisterDialogComponent,
     TaskListComponent,
     TaskFormComponent,
-    TaskItemComponent
+    TaskItemComponent,
+    EditTaskDialogComponent
   ],
   imports: [
     BrowserModule,
     BrowserAnimationsModule,
     HttpClientModule,
     ReactiveFormsModule,
+    FormsModule,
     AppRoutingModule,
     // Angular Material
     MatButtonModule,
