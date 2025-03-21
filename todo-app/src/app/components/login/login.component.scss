@@ -62,8 +62,53 @@
   }
   
   .remember-me {
-    margin-bottom: 24px;
+    margin-bottom: 40px;
     color: #666;
+    align-items: center; 
+    display: flex;
+    
+    
+    .checkbox-label {
+      font-size: 14px;
+      opacity: 0.85;
+      display: flex;
+      align-items: center;
+      margin-left: 15px;
+      margin-top: 18px;
+    }
+    
+    ::ng-deep.mat-mdc-checkbox {
+      --mdc-checkbox-unselected-hover-state-layer-color: transparent;
+      --mdc-checkbox-unselected-pressed-state-layer-color: transparent;
+      --mdc-checkbox-selected-hover-state-layer-color: #3f51b5;
+      --mdc-checkbox-selected-pressed-state-layer-color: #3f51b5;
+      --mdc-checkbox-ripple-color: transparent;
+    }
+    
+    ::ng-deep .mat-mdc-checkbox .mdc-checkbox {
+      background-color: transparent;
+    }
+    
+    ::ng-deep .mdc-checkbox .mdc-checkbox__background {
+      border-radius: 3px;
+    }
+    
+    ::ng-deep .mdc-checkbox__ripple {
+      background-color: transparent !important;
+    }
+    
+    ::ng-deep .mat-mdc-checkbox .mdc-checkbox .mdc-checkbox__native-control:enabled:checked ~ .mdc-checkbox__background {
+      background-color: #3f51b5 !important;
+      border-color: #3f51b5 !important;
+    }
+    
+    ::ng-deep .mat-mdc-checkbox .mat-ripple-element {
+      background-color: rgba(63, 81, 181, 0.1) !important;
+    }
+    
+    ::ng-deep .mat-mdc-checkbox-touch-target {
+      background-color: transparent !important;
+    }
   }
   
   .login-button {

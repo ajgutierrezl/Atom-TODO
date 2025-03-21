@@ -2,11 +2,11 @@
   <mat-toolbar color="primary" class="app-toolbar">
     <div class="toolbar-content">
       <div class="toolbar-title">
-        <mat-icon class="title-icon">task_alt</mat-icon>
+        <mat-icon class="title-icon">checklist</mat-icon>
         <span>TODO App</span>
       </div>
       <span class="toolbar-spacer"></span>
-      <button mat-button (click)="logout()" class="logout-button">
+      <button mat-button (click)="logout()" class="logout-button" matTooltip="Sign out">
         <mat-icon>exit_to_app</mat-icon>
         <span class="button-text">Log Out</span>
       </button>
@@ -17,13 +17,13 @@
     <div class="task-header">
       <h1 class="page-title">My Tasks</h1>
       <div class="task-stats">
-        <div class="stat-item">
+        <div class="stat-item" matTooltip="Total number of tasks">
           <span class="stat-value">{{(tasks$ | async)?.length || 0}}</span>
           <span class="stat-label">Total</span>
         </div>
-        <div class="stat-item">
+        <div class="stat-item" matTooltip="Completed tasks">
           <span class="stat-value">{{getCompletedCount() || 0}}</span>
-          <span class="stat-label">Completed</span>
+          <span class="stat-label">Done</span>
         </div>
       </div>
     </div>
@@ -32,8 +32,11 @@
 
     <div class="tasks-section">
       <div class="section-header">
-        <h2>Task List</h2>
-        <button mat-button color="accent" (click)="loadTasks()" class="refresh-button">
+        <h2>
+          <mat-icon class="section-icon">list_alt</mat-icon>
+          Task List
+        </h2>
+        <button mat-button color="accent" (click)="loadTasks()" class="refresh-button" matTooltip="Reload tasks">
           <mat-icon>refresh</mat-icon> Refresh
         </button>
       </div>
@@ -46,7 +49,9 @@
       <div *ngIf="error" class="error-message">
         <mat-icon color="warn">error_outline</mat-icon>
         <p>An error occurred while loading tasks.</p>
-        <button mat-raised-button color="primary" (click)="loadTasks()">Retry</button>
+        <button mat-raised-button color="primary" (click)="loadTasks()">
+          <mat-icon>refresh</mat-icon> Retry
+        </button>
       </div>
 
       <ng-container *ngIf="!isLoading && !error">
@@ -63,9 +68,9 @@
         
         <div *ngIf="(tasks$ | async)?.length === 0" class="empty-state">
           <div class="empty-state-content">
-            <mat-icon class="empty-icon">assignment</mat-icon>
+            <mat-icon class="empty-icon">playlist_add</mat-icon>
             <h3>You have no pending tasks</h3>
-            <p class="empty-desc">Create your first task using the form above</p>
+            <p class="empty-desc">Start organizing your day by creating your first task using the form above.</p>
             <button mat-raised-button color="primary" (click)="loadTasks()">
               <mat-icon>add</mat-icon> Create Task
             </button>

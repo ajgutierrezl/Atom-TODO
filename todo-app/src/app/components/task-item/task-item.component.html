@@ -4,21 +4,36 @@
       <mat-checkbox
         [checked]="task.completed"
         (change)="onToggle($event)"
-        color="primary">
+        color="accent"
+        class="custom-checkbox"
+        matTooltip="{{task.completed ? 'Mark as incomplete' : 'Mark as complete'}}">
         <span [class.completed-text]="task.completed">{{ task.title }}</span>
       </mat-checkbox>
       <div class="task-actions">
-        <button mat-icon-button (click)="onEdit()" aria-label="Edit task">
+        <button mat-icon-button (click)="onEdit()" aria-label="Edit task" matTooltip="Edit task">
           <mat-icon>edit</mat-icon>
         </button>
-        <button mat-icon-button (click)="onDelete()" aria-label="Delete task">
+        <button mat-icon-button (click)="onDelete()" aria-label="Delete task" matTooltip="Delete task">
           <mat-icon>delete</mat-icon>
         </button>
       </div>
     </div>
-    <p class="task-description" [class.completed-text]="task.completed">
-      {{ task.description }}
-    </p>
-    <span class="task-date">Created: {{ createdAtFormatted }}</span>
+    
+    <div class="task-content" *ngIf="task.description">
+      <p class="task-description" [class.completed-text]="task.completed">
+        {{ task.description }}
+      </p>
+    </div>
+    
+    <div class="task-footer">
+      <span class="task-date" matTooltip="Created on {{createdAtFormatted}}">
+        Created: {{ createdAtFormatted }}
+      </span>
+      <span class="task-status" *ngIf="task.completed" matTooltip="This task has been completed">
+        <mat-icon class="status-icon">done_all</mat-icon> Completed
+      </span>
+    </div>
   </mat-card-content>
+  
+  <div class="task-progress-indicator" *ngIf="task.completed"></div>
 </mat-card>

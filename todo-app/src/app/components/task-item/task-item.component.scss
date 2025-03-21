@@ -2,15 +2,98 @@
   padding: 16px;
 }
 
-.task-header {
-  display: flex;
-  align-items: flex-start;
-  margin-bottom: 12px;
-}
-
 .task-checkbox {
   margin-right: 8px;
   margin-top: 2px;
+}
+
+.task-card {
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+  border-radius: 12px !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08) !important;
+  
+  &:hover {
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.12) !important;
+    transform: translateY(-2px);
+  }
+  
+  &.completed {
+    border-left: 4px solid #4CAF50;
+    background-color: rgba(76, 175, 80, 0.03);
+    
+    .task-progress-indicator {
+      position: absolute;
+      top: 0;
+      right: 0;
+      width: 0;
+      height: 0;
+      border-style: solid;
+      border-width: 0 32px 32px 0;
+      border-color: transparent #4CAF50 transparent transparent;
+      z-index: 1;
+    }
+  }
+}
+
+.task-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+/* Estilos para el checkbox personalizado */
+.custom-checkbox {
+  ::ng-deep .mdc-form-field {
+    color: inherit;
+  }
+  
+  /* Estilo para el estado normal del checkbox */
+  ::ng-deep .mdc-checkbox .mdc-checkbox__background {
+    border-width: 2px;
+    border-color: #757575;
+    background-color: white !important;
+    transition: all 0.3s ease;
+    width: 18px;
+    height: 18px;
+    border-radius: 5px;
+  }
+  
+  /* Estilo para el estado marcado */
+  ::ng-deep .mdc-checkbox .mdc-checkbox__native-control:checked ~ .mdc-checkbox__background {
+    border-color: #4CAF50 !important;
+    background-color: #4CAF50 !important;
+  }
+  
+  /* Eliminar todos los efectos de ripple y hover */
+  ::ng-deep .mdc-checkbox .mdc-checkbox__ripple, 
+  ::ng-deep .mdc-checkbox:hover .mdc-checkbox__ripple,
+  ::ng-deep .mdc-checkbox .mat-mdc-checkbox-touch-target,
+  ::ng-deep .mat-mdc-checkbox .mat-ripple-element {
+    background-color: transparent !important;
+  }
+  
+  /* Personalizar el ícono de check */
+  ::ng-deep .mdc-checkbox .mdc-checkbox__background .mdc-checkbox__checkmark {
+    color: white;
+    width: 16px;
+    height: 16px;
+  }
+  
+  /* Ajustes para el texto */
+  span {
+    padding-left: 8px;
+    font-size: 16px;
+    font-weight: 500;
+    transition: all 0.3s ease;
+  }
+}
+
+.completed-text {
+  color: #9e9e9e;
+  text-decoration: line-through;
 }
 
 .task-title {
@@ -28,14 +111,32 @@
   }
 }
 
+.task-content {
+  position: relative;
+  padding-left: 32px;
+  padding-right: 8px;
+  margin-bottom: 16px;
+  
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 16px;
+    height: 100%;
+    width: 2px;
+    background-color: rgba(0, 0, 0, 0.06);
+    border-radius: 2px;
+  }
+}
+
 .task-description {
   color: #616161;
-  margin-bottom: 16px;
-  line-height: 1.5;
+  line-height: 1.6;
   white-space: pre-line;
   word-break: break-word;
-  padding-left: 32px;
   transition: all 0.3s ease;
+  font-size: 14px;
+  margin: 0;
   
   &.completed {
     color: #9e9e9e;
@@ -47,29 +148,34 @@
   margin-left: 8px;
   
   button {
-    opacity: 0.85;
+    opacity: 0.75;
     transition: all 0.2s ease;
+    border-radius: 50%;
     
     &:hover {
       opacity: 1;
       transform: scale(1.1);
+      background-color: rgba(0, 0, 0, 0.05);
+    }
+    
+    &:first-child {
+      color: #3f51b5;
+      
+      &:hover {
+        background-color: rgba(63, 81, 181, 0.1);
+      }
+    }
+    
+    &:last-child {
+      color: #f44336;
+      
+      &:hover {
+        background-color: rgba(244, 67, 54, 0.1);
+      }
     }
     
     mat-icon {
       font-size: 20px;
-    }
-  }
-
-  .edit-button {
-    color: #3f51b5;
-    background-color: rgba(63, 81, 181, 0.1);
-    
-    &:hover {
-      background-color: rgba(63, 81, 181, 0.2);
-    }
-    
-    mat-icon {
-      font-size: 22px;
     }
   }
 }
@@ -79,28 +185,51 @@
   justify-content: space-between;
   align-items: center;
   padding-left: 32px;
-  padding-top: 8px;
-  border-top: 1px solid #eee;
+  padding-top: 12px;
+  margin-top: 8px;
+  border-top: 1px solid rgba(0, 0, 0, 0.08);
 }
 
 .task-date {
   font-size: 13px;
   color: #757575;
+  background-color: rgba(0, 0, 0, 0.03);
+  padding: 4px 8px;
+  border-radius: 12px;
+  
+  &::before {
+    content: '🕒 ';
+    font-size: 11px;
+  }
+}
+
+.task-status {
+  display: flex;
+  align-items: center;
+  font-size: 13px;
+  color: #4CAF50;
+  background-color: rgba(76, 175, 80, 0.1);
+  padding: 4px 8px;
+  border-radius: 12px;
+  font-weight: 500;
+  
+  .status-icon {
+    font-size: 14px;
+    height: 14px;
+    width: 14px;
+    margin-right: 4px;
+  }
 }
 
 // Animación para completar tarea
-.task-checkbox ::ng-deep .mat-checkbox-background {
-  transition: background-color 0.4s ease;
-}
-
 @keyframes fadeTask {
   0% {
     opacity: 1;
     transform: translateY(0);
   }
-  80% {
-    opacity: 0.2;
-    transform: translateY(8px);
+  50% {
+    opacity: 0.5;
+    transform: translateY(4px);
   }
   100% {
     opacity: 1;
@@ -109,7 +238,7 @@
 }
 
 :host-context(.task-card.completed-task) {
-  animation: fadeTask 0.5s ease;
+  animation: fadeTask 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
 }
 
 @media (max-width: 599px) {
@@ -117,5 +246,17 @@
     flex-direction: column;
     align-items: flex-start;
     gap: 8px;
+  }
+  
+  .task-description {
+    padding-left: 0;
+  }
+  
+  .task-content {
+    padding-left: 16px;
+    
+    &::before {
+      left: 8px;
+    }
   }
 }
