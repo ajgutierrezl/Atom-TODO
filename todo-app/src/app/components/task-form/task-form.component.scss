@@ -1,0 +1,81 @@
+.task-form-card {
+  margin-bottom: 24px;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+.card-header {
+  background-color: #3f51b5;
+  color: white;
+  padding: 16px 24px;
+  display: flex;
+  align-items: center;
+  
+  .form-icon {
+    font-size: 28px;
+    height: 28px;
+    width: 28px;
+    margin-right: 12px;
+  }
+  
+  .form-title {
+    margin: 0;
+    font-weight: 500;
+    font-size: 20px;
+  }
+}
+
+.card-content {
+  padding: 24px;
+}
+
+.form-field {
+  width: 100%;
+  margin-bottom: 16px;
+  
+  &:last-of-type {
+    margin-bottom: 24px;
+  }
+  
+  .input-icon {
+    color: #757575;
+    margin-right: 8px;
+  }
+}
+
+.form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 8px;
+  
+  button {
+    min-width: 110px;
+    
+    mat-icon {
+      margin-right: 4px;
+    }
+  }
+  
+  .spinner {
+    display: inline-block;
+    margin-right: 8px;
+  }
+}
+
+/* Responsive styles */
+@media (max-width: 599px) {
+  .card-content {
+    padding: 16px;
+  }
+  
+  .form-actions {
+    flex-direction: column;
+    
+    button {
+      width: 100%;
+      margin-top: 8px;
+    }
+  }
+}

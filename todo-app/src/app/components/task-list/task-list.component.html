@@ -1,0 +1,77 @@
+<div class="task-list-container">
+  <mat-toolbar color="primary" class="app-toolbar">
+    <div class="toolbar-content">
+      <div class="toolbar-title">
+        <mat-icon class="title-icon">task_alt</mat-icon>
+        <span>TODO App</span>
+      </div>
+      <span class="toolbar-spacer"></span>
+      <button mat-button (click)="logout()" class="logout-button">
+        <mat-icon>exit_to_app</mat-icon>
+        <span class="button-text">Log Out</span>
+      </button>
+    </div>
+  </mat-toolbar>
+
+  <div class="content-container">
+    <div class="task-header">
+      <h1 class="page-title">My Tasks</h1>
+      <div class="task-stats">
+        <div class="stat-item">
+          <span class="stat-value">{{(tasks$ | async)?.length || 0}}</span>
+          <span class="stat-label">Total</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-value">{{getCompletedCount() || 0}}</span>
+          <span class="stat-label">Completed</span>
+        </div>
+      </div>
+    </div>
+
+    <app-task-form (taskCreated)="loadTasks()"></app-task-form>
+
+    <div class="tasks-section">
+      <div class="section-header">
+        <h2>Task List</h2>
+        <button mat-button color="accent" (click)="loadTasks()" class="refresh-button">
+          <mat-icon>refresh</mat-icon> Refresh
+        </button>
+      </div>
+      
+      <div *ngIf="isLoading" class="loading-container">
+        <mat-spinner diameter="40"></mat-spinner>
+        <p class="loading-text">Loading your tasks...</p>
+      </div>
+      
+      <div *ngIf="error" class="error-message">
+        <mat-icon color="warn">error_outline</mat-icon>
+        <p>An error occurred while loading tasks.</p>
+        <button mat-raised-button color="primary" (click)="loadTasks()">Retry</button>
+      </div>
+
+      <ng-container *ngIf="!isLoading && !error">
+        <div class="tasks-grid">
+          <mat-card *ngFor="let task of tasks$ | async; trackBy: trackById" class="task-card" [class.completed-task]="task.completed">
+            <app-task-item
+              [task]="task"
+              (taskToggled)="onTaskToggle(task)"
+              (taskEdited)="onTaskEdit(task)"
+              (taskDeleted)="onTaskDelete(task.id!)">
+            </app-task-item>
+          </mat-card>
+        </div>
+        
+        <div *ngIf="(tasks$ | async)?.length === 0" class="empty-state">
+          <div class="empty-state-content">
+            <mat-icon class="empty-icon">assignment</mat-icon>
+            <h3>You have no pending tasks</h3>
+            <p class="empty-desc">Create your first task using the form above</p>
+            <button mat-raised-button color="primary" (click)="focusTaskForm()">
+              <mat-icon>add</mat-icon> Create Task
+            </button>
+          </div>
+        </div>
+      </ng-container>
+    </div>
+  </div>
+</div>

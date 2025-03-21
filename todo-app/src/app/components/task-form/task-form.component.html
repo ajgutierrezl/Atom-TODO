@@ -1,0 +1,46 @@
+<mat-card class="task-form-card">
+  <div class="card-header">
+    <mat-icon class="form-icon">add_task</mat-icon>
+    <h2 class="form-title">New Task</h2>
+  </div>
+  
+  <div class="card-content">
+    <form [formGroup]="taskForm" (ngSubmit)="onSubmit()">
+      <mat-form-field appearance="outline" class="form-field">
+        <mat-label>Title</mat-label>
+        <input matInput #titleInput formControlName="title" placeholder="Write a title for your task">
+        <mat-icon matPrefix class="input-icon">title</mat-icon>
+        <mat-hint align="end">{{taskForm.get('title')?.value?.length || 0}}/100</mat-hint>
+        <mat-error *ngIf="taskForm.controls['title'].hasError('required')">
+          Title is required
+        </mat-error>
+        <mat-error *ngIf="taskForm.controls['title'].hasError('maxlength')">
+          Title cannot exceed 100 characters
+        </mat-error>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="form-field">
+        <mat-label>Description</mat-label>
+        <textarea matInput formControlName="description" placeholder="Describe the details of the task" rows="3"></textarea>
+        <mat-icon matPrefix class="input-icon">description</mat-icon>
+        <mat-hint align="end">{{taskForm.get('description')?.value?.length || 0}}/500</mat-hint>
+        <mat-error *ngIf="taskForm.controls['description'].hasError('required')">
+          Description is required
+        </mat-error>
+        <mat-error *ngIf="taskForm.controls['description'].hasError('maxlength')">
+          Description cannot exceed 500 characters
+        </mat-error>
+      </mat-form-field>
+
+      <div class="form-actions">
+        <button mat-stroked-button type="button" (click)="taskForm.reset()" [disabled]="isLoading || taskForm.pristine">
+          <mat-icon>refresh</mat-icon> Clear
+        </button>
+        <button mat-raised-button color="primary" type="submit" [disabled]="taskForm.invalid || isLoading">
+          <mat-spinner diameter="20" *ngIf="isLoading" class="spinner"></mat-spinner>
+          <span *ngIf="!isLoading"><mat-icon>add</mat-icon> Add Task</span>
+        </button>
+      </div>
+    </form>
+  </div>
+</mat-card>

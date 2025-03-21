@@ -1,0 +1,42 @@
+<div class="login-container">
+  <div class="login-wrapper">
+    <div class="login-logo">
+      <mat-icon class="logo-icon">task_alt</mat-icon>
+      <h1 class="app-title">TODO App</h1>
+    </div>
+    
+    <mat-card class="login-card">
+      <mat-card-content>
+        <h2 class="login-title">Welcome</h2>
+        <p class="login-subtitle">Enter your email to continue</p>
+        
+        <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Email</mat-label>
+            <input matInput type="email" formControlName="email" placeholder="example@email.com">
+            <mat-icon matPrefix class="input-icon">email</mat-icon>
+            <mat-error *ngIf="loginForm.controls['email'].hasError('required')">
+              Email is required
+            </mat-error>
+            <mat-error *ngIf="loginForm.controls['email'].hasError('email')">
+              Enter a valid email
+            </mat-error>
+          </mat-form-field>
+          
+          <div class="remember-email">
+            <mat-checkbox color="primary" [checked]="rememberEmail" (change)="toggleRememberEmail()">Remember email</mat-checkbox>
+          </div>
+          
+          <button mat-raised-button color="primary" type="submit" class="login-button full-width" [disabled]="loginForm.invalid || isLoading">
+            <mat-spinner diameter="20" *ngIf="isLoading" class="spinner"></mat-spinner>
+            <span *ngIf="!isLoading">Log in</span>
+          </button>
+        </form>
+        
+        <div class="login-footer">
+          <p>Your email will be used only for identification</p>
+        </div>
+      </mat-card-content>
+    </mat-card>
+  </div>
+</div>
