@@ -193,3 +193,30 @@ Future planned enhancements:
 ## License
 
 This project is licensed under the ISC License
+
+## CI/CD Pipeline
+
+This project uses GitHub Actions for continuous integration and deployment. The workflow includes:
+
+### For the Backend:
+- Running linter
+- Running unit tests
+- Building the application
+- Automatic deployment to Firebase Functions
+
+### For the Frontend:
+- Running linter
+- Running unit tests
+- Building the application
+- Automatic deployment to Firebase Hosting
+
+### Configuration:
+
+1. Deployment is automatically triggered with each push to the `main` or `master` branches
+2. You need to configure the `FIREBASE_TOKEN` secret in your GitHub repository:
+   - Generate a token with `firebase login:ci`
+   - Add the token as a secret in your GitHub repository settings
+
+### Build Status:
+
+![CI/CD Status](https://github.com/[your-username]/atom-todo/actions/workflows/ci-cd.yml/badge.svg)

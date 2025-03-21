@@ -79,6 +79,9 @@ app.use((err: any, req: express.Request, res: express.Response, next: express.Ne
   });
 });
 
+// For Firebase Functions support
+export const api = app;
+
 // Iniciar servidor
 const server = app.listen(port, () => {
   console.log(`Servidor corriendo en http://localhost:${port}`);
