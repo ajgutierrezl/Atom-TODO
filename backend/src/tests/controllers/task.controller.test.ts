@@ -1,6 +1,6 @@
 // Mocks para los métodos del TaskService
 const mockFindAll = jest.fn();
-const mockFindOne = jest.fn();
+const mockFindById = jest.fn();
 const mockCreate = jest.fn();
 const mockUpdate = jest.fn();
 const mockDelete = jest.fn();
@@ -11,7 +11,7 @@ jest.mock('../../services/task.service', () => {
     TaskService: jest.fn().mockImplementation(() => {
       return {
         findAll: mockFindAll,
-        findOne: mockFindOne,
+        findById: mockFindById,
         create: mockCreate,
         update: mockUpdate,
         delete: mockDelete
@@ -54,17 +54,17 @@ describe('TaskController', () => {
     taskController = new TaskController();
   });
   
-  describe('findAll', () => {
+  describe('getTasks', () => {
     it('should return 401 if user is not authenticated', async () => {
       // Arrange
       mockRequest.user = undefined;
       
       // Act
-      await taskController.findAll(mockRequest as AuthRequest, mockResponse as Response);
+      await taskController.getTasks(mockRequest as AuthRequest, mockResponse as Response);
       
       // Assert
       expect(mockResponse.status).toHaveBeenCalledWith(401);
-      expect(mockResponse.json).toHaveBeenCalledWith({ error: 'Unauthorized' });
+      expect(mockResponse.json).toHaveBeenCalledWith({ error: 'Usuario no autorizado' });
     });
     
     it('should return tasks for authenticated user', async () => {
@@ -76,14 +76,15 @@ describe('TaskController', () => {
           description: 'Description 1',
           completed: false,
           userId: mockUserId,
-          createdAt: new Date()
+          createdAt: new Date(),
+          updatedAt: new Date()
         }
       ];
       
       mockFindAll.mockResolvedValue(mockTasks);
       
       // Act
-      await taskController.findAll(mockRequest as AuthRequest, mockResponse as Response);
+      await taskController.getTasks(mockRequest as AuthRequest, mockResponse as Response);
       
       // Assert
       expect(mockFindAll).toHaveBeenCalledWith(mockUserId);
@@ -92,14 +93,14 @@ describe('TaskController', () => {
     });
   });
   
-  describe('findOne', () => {
+  describe('getTask', () => {
     it('should return 400 if id is not provided', async () => {
       // Act
-      await taskController.findOne(mockRequest as AuthRequest, mockResponse as Response);
+      await taskController.getTask(mockRequest as AuthRequest, mockResponse as Response);
       
       // Assert
       expect(mockResponse.status).toHaveBeenCalledWith(400);
-      expect(mockResponse.json).toHaveBeenCalledWith({ error: 'Id is required' });
+      expect(mockResponse.json).toHaveBeenCalledWith({ error: 'ID de tarea requerido' });
     });
     
     it('should return 401 if user is not authenticated', async () => {
@@ -108,48 +109,25 @@ describe('TaskController', () => {
       mockRequest.user = undefined;
       
       // Act
-      await taskController.findOne(mockRequest as AuthRequest, mockResponse as Response);
+      await taskController.getTask(mockRequest as AuthRequest, mockResponse as Response);
       
       // Assert
       expect(mockResponse.status).toHaveBeenCalledWith(401);
-      expect(mockResponse.json).toHaveBeenCalledWith({ error: 'Unauthorized' });
+      expect(mockResponse.json).toHaveBeenCalledWith({ error: 'Usuario no autorizado' });
     });
     
     it('should return 404 if task is not found', async () => {
       // Arrange
       mockRequest.params = { id: mockTaskId };
-      mockFindOne.mockResolvedValue(null);
+      mockFindById.mockResolvedValue(null);
       
       // Act
-      await taskController.findOne(mockRequest as AuthRequest, mockResponse as Response);
+      await taskController.getTask(mockRequest as AuthRequest, mockResponse as Response);
       
       // Assert
-      expect(mockFindOne).toHaveBeenCalledWith(mockTaskId);
+      expect(mockFindById).toHaveBeenCalledWith(mockTaskId, mockUserId);
       expect(mockResponse.status).toHaveBeenCalledWith(404);
-      expect(mockResponse.json).toHaveBeenCalledWith({ error: 'Task not found' });
-    });
-    
-    it('should return 403 if task belongs to another user', async () => {
-      // Arrange
-      const mockTask: Task = {
-        id: mockTaskId,
-        title: 'Task',
-        description: 'Description',
-        completed: false,
-        userId: 'different-user-id',
-        createdAt: new Date()
-      };
-      
-      mockRequest.params = { id: mockTaskId };
-      mockFindOne.mockResolvedValue(mockTask);
-      
-      // Act
-      await taskController.findOne(mockRequest as AuthRequest, mockResponse as Response);
-      
-      // Assert
-      expect(mockFindOne).toHaveBeenCalledWith(mockTaskId);
-      expect(mockResponse.status).toHaveBeenCalledWith(403);
-      expect(mockResponse.json).toHaveBeenCalledWith({ error: 'Forbidden - Task belongs to another user' });
+      expect(mockResponse.json).toHaveBeenCalledWith({ error: 'Tarea no encontrada' });
     });
     
     it('should return task if it belongs to the authenticated user', async () => {
@@ -160,42 +138,43 @@ describe('TaskController', () => {
         description: 'Description',
         completed: false,
         userId: mockUserId,
-        createdAt: new Date()
+        createdAt: new Date(),
+        updatedAt: new Date()
       };
       
       mockRequest.params = { id: mockTaskId };
-      mockFindOne.mockResolvedValue(mockTask);
+      mockFindById.mockResolvedValue(mockTask);
       
       // Act
-      await taskController.findOne(mockRequest as AuthRequest, mockResponse as Response);
+      await taskController.getTask(mockRequest as AuthRequest, mockResponse as Response);
       
       // Assert
-      expect(mockFindOne).toHaveBeenCalledWith(mockTaskId);
+      expect(mockFindById).toHaveBeenCalledWith(mockTaskId, mockUserId);
       expect(mockResponse.status).toHaveBeenCalledWith(200);
       expect(mockResponse.json).toHaveBeenCalledWith(mockTask);
     });
   });
   
-  describe('create', () => {
+  describe('createTask', () => {
     it('should return 401 if user is not authenticated', async () => {
       // Arrange
       mockRequest.user = undefined;
       
       // Act
-      await taskController.create(mockRequest as AuthRequest, mockResponse as Response);
+      await taskController.createTask(mockRequest as AuthRequest, mockResponse as Response);
       
       // Assert
       expect(mockResponse.status).toHaveBeenCalledWith(401);
-      expect(mockResponse.json).toHaveBeenCalledWith({ error: 'Unauthorized' });
+      expect(mockResponse.json).toHaveBeenCalledWith({ error: 'Usuario no autorizado' });
     });
     
-    it('should return 400 if title or description is missing', async () => {
+    it('should return 400 if title is missing', async () => {
       // Act
-      await taskController.create(mockRequest as AuthRequest, mockResponse as Response);
+      await taskController.createTask(mockRequest as AuthRequest, mockResponse as Response);
       
       // Assert
       expect(mockResponse.status).toHaveBeenCalledWith(400);
-      expect(mockResponse.json).toHaveBeenCalledWith({ error: 'Title and description are required' });
+      expect(mockResponse.json).toHaveBeenCalledWith({ error: 'El título es requerido' });
     });
     
     it('should create and return task', async () => {
@@ -214,14 +193,15 @@ describe('TaskController', () => {
         id: mockTaskId,
         ...taskWithUserId,
         completed: false,
-        createdAt: new Date()
+        createdAt: new Date(),
+        updatedAt: new Date()
       };
       
       mockRequest.body = taskData;
       mockCreate.mockResolvedValue(mockTask);
       
       // Act
-      await taskController.create(mockRequest as AuthRequest, mockResponse as Response);
+      await taskController.createTask(mockRequest as AuthRequest, mockResponse as Response);
       
       // Assert
       expect(mockCreate).toHaveBeenCalledWith(taskWithUserId);
@@ -230,14 +210,14 @@ describe('TaskController', () => {
     });
   });
   
-  describe('update', () => {
+  describe('updateTask', () => {
     it('should return 400 if id is not provided', async () => {
       // Act
-      await taskController.update(mockRequest as AuthRequest, mockResponse as Response);
+      await taskController.updateTask(mockRequest as AuthRequest, mockResponse as Response);
       
       // Assert
       expect(mockResponse.status).toHaveBeenCalledWith(400);
-      expect(mockResponse.json).toHaveBeenCalledWith({ error: 'Id is required' });
+      expect(mockResponse.json).toHaveBeenCalledWith({ error: 'ID de tarea requerido' });
     });
     
     it('should return 401 if user is not authenticated', async () => {
@@ -246,106 +226,66 @@ describe('TaskController', () => {
       mockRequest.user = undefined;
       
       // Act
-      await taskController.update(mockRequest as AuthRequest, mockResponse as Response);
+      await taskController.updateTask(mockRequest as AuthRequest, mockResponse as Response);
       
       // Assert
       expect(mockResponse.status).toHaveBeenCalledWith(401);
-      expect(mockResponse.json).toHaveBeenCalledWith({ error: 'Unauthorized' });
-    });
-    
-    it('should return 400 if no update data is provided', async () => {
-      // Arrange
-      mockRequest.params = { id: mockTaskId };
-      
-      // Act
-      await taskController.update(mockRequest as AuthRequest, mockResponse as Response);
-      
-      // Assert
-      expect(mockResponse.status).toHaveBeenCalledWith(400);
-      expect(mockResponse.json).toHaveBeenCalledWith({ error: 'No data to update' });
+      expect(mockResponse.json).toHaveBeenCalledWith({ error: 'Usuario no autorizado' });
     });
     
     it('should return 404 if task is not found', async () => {
       // Arrange
       mockRequest.params = { id: mockTaskId };
-      mockRequest.body = { title: 'Updated Title' };
-      mockFindOne.mockResolvedValue(null);
+      mockUpdate.mockResolvedValue(null);
       
       // Act
-      await taskController.update(mockRequest as AuthRequest, mockResponse as Response);
+      await taskController.updateTask(mockRequest as AuthRequest, mockResponse as Response);
       
       // Assert
-      expect(mockFindOne).toHaveBeenCalledWith(mockTaskId);
+      expect(mockUpdate).toHaveBeenCalledWith(mockTaskId, mockUserId, {});
       expect(mockResponse.status).toHaveBeenCalledWith(404);
-      expect(mockResponse.json).toHaveBeenCalledWith({ error: 'Task not found' });
-    });
-    
-    it('should return 403 if task belongs to another user', async () => {
-      // Arrange
-      const mockTask: Task = {
-        id: mockTaskId,
-        title: 'Task',
-        description: 'Description',
-        completed: false,
-        userId: 'different-user-id',
-        createdAt: new Date()
-      };
-      
-      mockRequest.params = { id: mockTaskId };
-      mockRequest.body = { title: 'Updated Title' };
-      mockFindOne.mockResolvedValue(mockTask);
-      
-      // Act
-      await taskController.update(mockRequest as AuthRequest, mockResponse as Response);
-      
-      // Assert
-      expect(mockFindOne).toHaveBeenCalledWith(mockTaskId);
-      expect(mockResponse.status).toHaveBeenCalledWith(403);
-      expect(mockResponse.json).toHaveBeenCalledWith({ error: 'Forbidden - Task belongs to another user' });
+      expect(mockResponse.json).toHaveBeenCalledWith({ error: 'Tarea no encontrada' });
     });
     
     it('should update and return task', async () => {
       // Arrange
-      const existingTask: Task = {
-        id: mockTaskId,
-        title: 'Original Title',
-        description: 'Original Description',
-        completed: false,
-        userId: mockUserId,
-        createdAt: new Date()
+      const updateData = {
+        title: 'Updated Task',
+        completed: true
       };
       
-      const updateData = { title: 'Updated Title' };
-      
-      const updatedTask: Task = {
-        ...existingTask,
-        ...updateData
+      const mockTask: Task = {
+        id: mockTaskId,
+        title: 'Updated Task',
+        description: 'Original Description',
+        completed: true,
+        userId: mockUserId,
+        createdAt: new Date(),
+        updatedAt: new Date()
       };
       
       mockRequest.params = { id: mockTaskId };
       mockRequest.body = updateData;
-      mockFindOne.mockResolvedValue(existingTask);
-      mockUpdate.mockResolvedValue(updatedTask);
+      mockUpdate.mockResolvedValue(mockTask);
       
       // Act
-      await taskController.update(mockRequest as AuthRequest, mockResponse as Response);
+      await taskController.updateTask(mockRequest as AuthRequest, mockResponse as Response);
       
       // Assert
-      expect(mockFindOne).toHaveBeenCalledWith(mockTaskId);
-      expect(mockUpdate).toHaveBeenCalledWith(mockTaskId, updateData);
+      expect(mockUpdate).toHaveBeenCalledWith(mockTaskId, mockUserId, updateData);
       expect(mockResponse.status).toHaveBeenCalledWith(200);
-      expect(mockResponse.json).toHaveBeenCalledWith(updatedTask);
+      expect(mockResponse.json).toHaveBeenCalledWith(mockTask);
     });
   });
   
-  describe('delete', () => {
+  describe('deleteTask', () => {
     it('should return 400 if id is not provided', async () => {
       // Act
-      await taskController.delete(mockRequest as AuthRequest, mockResponse as Response);
+      await taskController.deleteTask(mockRequest as AuthRequest, mockResponse as Response);
       
       // Assert
       expect(mockResponse.status).toHaveBeenCalledWith(400);
-      expect(mockResponse.json).toHaveBeenCalledWith({ error: 'Id is required' });
+      expect(mockResponse.json).toHaveBeenCalledWith({ error: 'ID de tarea requerido' });
     });
     
     it('should return 401 if user is not authenticated', async () => {
@@ -354,71 +294,37 @@ describe('TaskController', () => {
       mockRequest.user = undefined;
       
       // Act
-      await taskController.delete(mockRequest as AuthRequest, mockResponse as Response);
+      await taskController.deleteTask(mockRequest as AuthRequest, mockResponse as Response);
       
       // Assert
       expect(mockResponse.status).toHaveBeenCalledWith(401);
-      expect(mockResponse.json).toHaveBeenCalledWith({ error: 'Unauthorized' });
+      expect(mockResponse.json).toHaveBeenCalledWith({ error: 'Usuario no autorizado' });
     });
     
     it('should return 404 if task is not found', async () => {
       // Arrange
       mockRequest.params = { id: mockTaskId };
-      mockFindOne.mockResolvedValue(null);
+      mockDelete.mockResolvedValue(false);
       
       // Act
-      await taskController.delete(mockRequest as AuthRequest, mockResponse as Response);
+      await taskController.deleteTask(mockRequest as AuthRequest, mockResponse as Response);
       
       // Assert
-      expect(mockFindOne).toHaveBeenCalledWith(mockTaskId);
+      expect(mockDelete).toHaveBeenCalledWith(mockTaskId, mockUserId);
       expect(mockResponse.status).toHaveBeenCalledWith(404);
-      expect(mockResponse.json).toHaveBeenCalledWith({ error: 'Task not found' });
-    });
-    
-    it('should return 403 if task belongs to another user', async () => {
-      // Arrange
-      const mockTask: Task = {
-        id: mockTaskId,
-        title: 'Task',
-        description: 'Description',
-        completed: false,
-        userId: 'different-user-id',
-        createdAt: new Date()
-      };
-      
-      mockRequest.params = { id: mockTaskId };
-      mockFindOne.mockResolvedValue(mockTask);
-      
-      // Act
-      await taskController.delete(mockRequest as AuthRequest, mockResponse as Response);
-      
-      // Assert
-      expect(mockFindOne).toHaveBeenCalledWith(mockTaskId);
-      expect(mockResponse.status).toHaveBeenCalledWith(403);
-      expect(mockResponse.json).toHaveBeenCalledWith({ error: 'Forbidden - Task belongs to another user' });
+      expect(mockResponse.json).toHaveBeenCalledWith({ error: 'Tarea no encontrada' });
     });
     
     it('should delete task and return 204', async () => {
       // Arrange
-      const mockTask: Task = {
-        id: mockTaskId,
-        title: 'Task',
-        description: 'Description',
-        completed: false,
-        userId: mockUserId,
-        createdAt: new Date()
-      };
-      
       mockRequest.params = { id: mockTaskId };
-      mockFindOne.mockResolvedValue(mockTask);
       mockDelete.mockResolvedValue(true);
       
       // Act
-      await taskController.delete(mockRequest as AuthRequest, mockResponse as Response);
+      await taskController.deleteTask(mockRequest as AuthRequest, mockResponse as Response);
       
       // Assert
-      expect(mockFindOne).toHaveBeenCalledWith(mockTaskId);
-      expect(mockDelete).toHaveBeenCalledWith(mockTaskId);
+      expect(mockDelete).toHaveBeenCalledWith(mockTaskId, mockUserId);
       expect(mockResponse.status).toHaveBeenCalledWith(204);
       expect(mockResponse.send).toHaveBeenCalled();
     });
