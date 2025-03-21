@@ -1,10 +1,15 @@
-export interface Task {
-  id?: string;
+export interface TaskDTO {
   title: string;
-  description: string;
-  completed: boolean;
-  createdAt: Date;
+  description?: string;
+  completed?: boolean;
+}
+
+export interface Task extends TaskDTO {
+  id: string;
   userId: string;
+  createdAt: Date;
+  updatedAt: Date;
+  completed: boolean;
 }
 
 export interface CreateTaskDTO {

@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 import { TaskService } from '../services/task.service';
-import { CreateTaskDTO, UpdateTaskDTO } from '../models/task.model';
 import { AuthRequest } from '../middleware/auth.middleware';
+import { TaskDTO } from '../models/task.model';
 
 export class TaskController {
   private taskService: TaskService;
@@ -10,158 +10,135 @@ export class TaskController {
     this.taskService = new TaskService();
   }
 
-  findAll = async (req: AuthRequest, res: Response): Promise<void> => {
+  getTasks = async (req: AuthRequest, res: Response): Promise<void> => {
     try {
       const userId = req.user?.sub;
-
+      
       if (!userId) {
-        res.status(401).json({ error: 'Unauthorized' });
+        res.status(401).json({ error: 'Usuario no autorizado' });
         return;
       }
 
       const tasks = await this.taskService.findAll(userId);
       res.status(200).json(tasks);
     } catch (error) {
-      console.error('Error in findAll:', error);
-      res.status(500).json({ error: 'Internal server error' });
+      console.error('Error al obtener tareas:', error);
+      res.status(500).json({ error: 'Error interno del servidor' });
     }
   };
 
-  findOne = async (req: AuthRequest, res: Response): Promise<void> => {
+  getTask = async (req: AuthRequest, res: Response): Promise<void> => {
     try {
-      const { id } = req.params;
       const userId = req.user?.sub;
-
-      if (!id) {
-        res.status(400).json({ error: 'Id is required' });
-        return;
-      }
-
+      const taskId = req.params.id;
+      
       if (!userId) {
-        res.status(401).json({ error: 'Unauthorized' });
+        res.status(401).json({ error: 'Usuario no autorizado' });
         return;
       }
 
-      const task = await this.taskService.findOne(id);
+      if (!taskId) {
+        res.status(400).json({ error: 'ID de tarea requerido' });
+        return;
+      }
 
+      const task = await this.taskService.findById(taskId, userId);
+      
       if (!task) {
-        res.status(404).json({ error: 'Task not found' });
-        return;
-      }
-
-      if (task.userId !== userId) {
-        res.status(403).json({ error: 'Forbidden - Task belongs to another user' });
+        res.status(404).json({ error: 'Tarea no encontrada' });
         return;
       }
 
       res.status(200).json(task);
     } catch (error) {
-      console.error('Error in findOne:', error);
-      res.status(500).json({ error: 'Internal server error' });
+      console.error('Error al obtener tarea:', error);
+      res.status(500).json({ error: 'Error interno del servidor' });
     }
   };
 
-  create = async (req: AuthRequest, res: Response): Promise<void> => {
+  createTask = async (req: AuthRequest, res: Response): Promise<void> => {
     try {
       const userId = req.user?.sub;
-      const taskDTO = req.body as Omit<CreateTaskDTO, 'userId'>;
-
+      const taskData = req.body as TaskDTO;
+      
       if (!userId) {
-        res.status(401).json({ error: 'Unauthorized' });
+        res.status(401).json({ error: 'Usuario no autorizado' });
         return;
       }
 
-      if (!taskDTO.title || !taskDTO.description) {
-        res.status(400).json({ error: 'Title and description are required' });
+      if (!taskData.title) {
+        res.status(400).json({ error: 'El título es requerido' });
         return;
       }
 
-      const taskWithUserId: CreateTaskDTO = {
-        ...taskDTO,
+      const newTask = await this.taskService.create({
+        ...taskData,
         userId
-      };
+      });
 
-      const newTask = await this.taskService.create(taskWithUserId);
       res.status(201).json(newTask);
     } catch (error) {
-      console.error('Error in create:', error);
-      res.status(500).json({ error: 'Internal server error' });
+      console.error('Error al crear tarea:', error);
+      res.status(500).json({ error: 'Error interno del servidor' });
     }
   };
 
-  update = async (req: AuthRequest, res: Response): Promise<void> => {
+  updateTask = async (req: AuthRequest, res: Response): Promise<void> => {
     try {
-      const { id } = req.params;
       const userId = req.user?.sub;
-      const taskDTO = req.body as UpdateTaskDTO;
-
-      if (!id) {
-        res.status(400).json({ error: 'Id is required' });
-        return;
-      }
-
+      const taskId = req.params.id;
+      const taskData = req.body as Partial<TaskDTO>;
+      
       if (!userId) {
-        res.status(401).json({ error: 'Unauthorized' });
+        res.status(401).json({ error: 'Usuario no autorizado' });
         return;
       }
 
-      if (Object.keys(taskDTO).length === 0) {
-        res.status(400).json({ error: 'No data to update' });
+      if (!taskId) {
+        res.status(400).json({ error: 'ID de tarea requerido' });
         return;
       }
 
-      const existingTask = await this.taskService.findOne(id);
-
-      if (!existingTask) {
-        res.status(404).json({ error: 'Task not found' });
+      const updatedTask = await this.taskService.update(taskId, userId, taskData);
+      
+      if (!updatedTask) {
+        res.status(404).json({ error: 'Tarea no encontrada' });
         return;
       }
 
-      if (existingTask.userId !== userId) {
-        res.status(403).json({ error: 'Forbidden - Task belongs to another user' });
-        return;
-      }
-
-      const updatedTask = await this.taskService.update(id, taskDTO);
       res.status(200).json(updatedTask);
     } catch (error) {
-      console.error('Error in update:', error);
-      res.status(500).json({ error: 'Internal server error' });
+      console.error('Error al actualizar tarea:', error);
+      res.status(500).json({ error: 'Error interno del servidor' });
     }
   };
 
-  delete = async (req: AuthRequest, res: Response): Promise<void> => {
+  deleteTask = async (req: AuthRequest, res: Response): Promise<void> => {
     try {
-      const { id } = req.params;
       const userId = req.user?.sub;
-
-      if (!id) {
-        res.status(400).json({ error: 'Id is required' });
-        return;
-      }
-
+      const taskId = req.params.id;
+      
       if (!userId) {
-        res.status(401).json({ error: 'Unauthorized' });
+        res.status(401).json({ error: 'Usuario no autorizado' });
         return;
       }
 
-      const existingTask = await this.taskService.findOne(id);
-
-      if (!existingTask) {
-        res.status(404).json({ error: 'Task not found' });
+      if (!taskId) {
+        res.status(400).json({ error: 'ID de tarea requerido' });
         return;
       }
 
-      if (existingTask.userId !== userId) {
-        res.status(403).json({ error: 'Forbidden - Task belongs to another user' });
+      const deleted = await this.taskService.delete(taskId, userId);
+      
+      if (!deleted) {
+        res.status(404).json({ error: 'Tarea no encontrada' });
         return;
       }
 
-      const result = await this.taskService.delete(id);
       res.status(204).send();
     } catch (error) {
-      console.error('Error in delete:', error);
-      res.status(500).json({ error: 'Internal server error' });
+      console.error('Error al eliminar tarea:', error);
+      res.status(500).json({ error: 'Error interno del servidor' });
     }
   };
 } 

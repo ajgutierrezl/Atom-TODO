@@ -7,7 +7,7 @@ const userController = new UserController();
 
 // Rutas públicas
 userRouter.post('/login', userController.login);
-userRouter.post('/', userController.create);
+userRouter.post('/register', userController.create);
 
 // Rutas protegidas
 userRouter.get('/profile', authMiddleware, userController.getProfile);

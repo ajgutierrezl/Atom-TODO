@@ -1,30 +1,24 @@
-<div class="task-item">
-  <div class="task-header">
-    <mat-checkbox 
-      [checked]="task.completed" 
-      (change)="onTaskToggle()" 
-      color="primary"
-      class="task-checkbox">
-    </mat-checkbox>
-    <h3 class="task-title" [class.completed]="task.completed">{{ task.title }}</h3>
-    <div class="task-actions">
-      <button mat-icon-button (click)="onTaskEdit()" aria-label="Edit task" class="edit-button">
-        <mat-icon>edit</mat-icon>
-      </button>
-      <button mat-icon-button (click)="onTaskDelete()" aria-label="Delete task" color="warn">
-        <mat-icon>delete</mat-icon>
-      </button>
+<mat-card class="task-card" [class.completed]="task.completed">
+  <mat-card-content>
+    <div class="task-header">
+      <mat-checkbox
+        [checked]="task.completed"
+        (change)="onToggle($event)"
+        color="primary">
+        <span [class.completed-text]="task.completed">{{ task.title }}</span>
+      </mat-checkbox>
+      <div class="task-actions">
+        <button mat-icon-button (click)="onEdit()" aria-label="Edit task">
+          <mat-icon>edit</mat-icon>
+        </button>
+        <button mat-icon-button (click)="onDelete()" aria-label="Delete task">
+          <mat-icon>delete</mat-icon>
+        </button>
+      </div>
     </div>
-  </div>
-  
-  <p class="task-description" [class.completed]="task.completed">{{ task.description }}</p>
-  
-  <div class="task-footer">
+    <p class="task-description" [class.completed-text]="task.completed">
+      {{ task.description }}
+    </p>
     <span class="task-date">Created: {{ createdAtFormatted }}</span>
-    <mat-chip-listbox>
-      <mat-chip [color]="task.completed ? 'accent' : 'primary'" [highlighted]="true">
-        {{ task.completed ? 'Completed' : 'Pending' }}
-      </mat-chip>
-    </mat-chip-listbox>
-  </div>
-</div>
+  </mat-card-content>
+</mat-card>

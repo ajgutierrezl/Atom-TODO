@@ -1,59 +1,67 @@
-import { db } from '../config/firebase';
 import { User, UserDTO } from '../models/user.model';
+import { getFirestore } from '../config/firebase';
 
 export class UserService {
-  private collection = db.collection('users');
+  private collection = 'users';
 
   async findByEmail(email: string): Promise<User | null> {
-    const snapshot = await this.collection.where('email', '==', email).get();
+    try {
+      const db = getFirestore();
+      const snapshot = await db.collection(this.collection)
+        .where('email', '==', email)
+        .limit(1)
+        .get();
 
-    if (snapshot.empty) {
-      return null;
+      if (snapshot.empty) {
+        return null;
+      }
+
+      const doc = snapshot.docs[0];
+      return {
+        id: doc.id,
+        ...doc.data()
+      } as User;
+    } catch (error) {
+      console.error('Error finding user by email:', error);
+      throw error;
     }
-
-    const doc = snapshot.docs[0];
-    const userData = doc.data() as any;
-
-    return {
-      id: doc.id,
-      ...userData,
-      createdAt: userData.createdAt instanceof Date ? userData.createdAt : userData.createdAt.toDate()
-    };
   }
 
   async findById(id: string): Promise<User | null> {
     try {
-      const doc = await this.collection.doc(id).get();
+      const db = getFirestore();
+      const doc = await db.collection(this.collection).doc(id).get();
 
       if (!doc.exists) {
         return null;
       }
 
-      const userData = doc.data() as any;
-
       return {
         id: doc.id,
-        ...userData,
-        createdAt: userData.createdAt instanceof Date ? userData.createdAt : userData.createdAt.toDate()
-      };
+        ...doc.data()
+      } as User;
     } catch (error) {
-      console.error('Error finding user by ID:', error);
-      return null;
+      console.error('Error finding user by id:', error);
+      throw error;
     }
   }
 
-  async create(userDTO: UserDTO): Promise<User> {
-    const user: Omit<User, 'id'> = {
-      email: userDTO.email,
-      createdAt: new Date()
-    };
+  async create(userData: UserDTO): Promise<User> {
+    try {
+      const db = getFirestore();
+      const docRef = await db.collection(this.collection).add({
+        ...userData,
+        createdAt: new Date()
+      });
 
-    const docRef = await this.collection.add(user);
-    const doc = await docRef.get();
-    
-    return {
-      id: doc.id,
-      ...user
-    };
+      const newDoc = await docRef.get();
+      return {
+        id: newDoc.id,
+        ...newDoc.data()
+      } as User;
+    } catch (error) {
+      console.error('Error creating user:', error);
+      throw error;
+    }
   }
 } 

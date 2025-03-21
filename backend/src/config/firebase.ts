@@ -3,31 +3,37 @@ import * as dotenv from 'dotenv';
 
 dotenv.config();
 
-// Para desarrollo, puedes usar credenciales de cuenta de servicio
-// Para producción, deberías usar variables de entorno o secretos seguros
-const serviceAccount = process.env.FIREBASE_SERVICE_ACCOUNT
-  ? JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT)
-  : {
-      // Aquí deberías proporcionar una cuenta de servicio real para desarrollo
-      // o seguir las instrucciones para configurar Firebase con Google Cloud Functions
-      type: 'service_account',
-      project_id: 'tu-proyecto-id',
-      private_key_id: 'tu-private-key-id',
-      private_key: 'tu-private-key',
-      client_email: 'tu-client-email',
-      client_id: 'tu-client-id',
-      auth_uri: 'https://accounts.google.com/o/oauth2/auth',
-      token_uri: 'https://oauth2.googleapis.com/token',
-      auth_provider_x509_cert_url: 'https://www.googleapis.com/oauth2/v1/certs',
-      client_x509_cert_url: 'tu-client-cert-url',
-    };
+let db: admin.firestore.Firestore;
 
-// Inicializar Firebase Admin
-admin.initializeApp({
-  credential: admin.credential.cert(serviceAccount as admin.ServiceAccount),
-});
+const initializeFirebase = () => {
+  try {
+    if (!process.env.FIREBASE_SERVICE_ACCOUNT) {
+      throw new Error('FIREBASE_SERVICE_ACCOUNT is required');
+    }
 
-// Obtener Firestore
-const db = admin.firestore();
+    const serviceAccount = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT);
 
-export { admin, db }; 
+    // Inicializar la aplicación de Firebase
+    const app = admin.initializeApp({
+      credential: admin.credential.cert(serviceAccount)
+    });
+
+    // Inicializar Firestore
+    db = app.firestore();
+
+    console.log('Firebase initialized successfully');
+    return true;
+  } catch (error) {
+    console.error('Error initializing Firebase:', error);
+    throw error;
+  }
+};
+
+const getFirestore = () => {
+  if (!db) {
+    throw new Error('Firestore has not been initialized. Call initializeFirebase() first.');
+  }
+  return db;
+};
+
+export { admin, getFirestore, initializeFirebase }; 

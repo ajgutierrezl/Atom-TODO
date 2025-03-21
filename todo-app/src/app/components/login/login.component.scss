@@ -1,117 +1,141 @@
 .login-container {
-  display: flex;
-  justify-content: center;
-  align-items: center;
   min-height: 100vh;
-  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
-  padding: 20px;
-}
-
-.login-wrapper {
   display: flex;
   flex-direction: column;
   align-items: center;
-  width: 100%;
-  max-width: 450px;
+  justify-content: center;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  padding: 16px;
 }
 
-.login-logo {
+.app-logo {
   display: flex;
-  flex-direction: column;
   align-items: center;
-  margin-bottom: 24px;
+  margin-bottom: 32px;
   
   .logo-icon {
     font-size: 48px;
-    height: 48px;
     width: 48px;
-    color: #3f51b5;
-    margin-bottom: 8px;
-    animation: pulse 1.5s ease infinite alternate;
+    height: 48px;
+    color: white;
+    margin-right: 16px;
   }
   
-  .app-title {
-    font-size: 28px;
+  .app-name {
+    font-size: 36px;
     font-weight: 500;
-    color: #2c3e50;
+    color: white;
     margin: 0;
   }
 }
 
 .login-card {
   width: 100%;
-  border-radius: 12px;
-  overflow: hidden;
-  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
-  transition: transform 0.3s ease;
+  max-width: 400px;
+  padding: 32px;
+  border-radius: 16px !important;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1) !important;
   
-  &:hover {
-    transform: translateY(-5px);
-  }
-}
-
-.login-title {
-  font-size: 24px;
-  font-weight: 500;
-  color: #333;
-  margin-bottom: 8px;
-  text-align: center;
-}
-
-.login-subtitle {
-  font-size: 16px;
-  color: #666;
-  margin-bottom: 24px;
-  text-align: center;
-}
-
-.full-width {
-  width: 100%;
-  margin-bottom: 16px;
-}
-
-.input-icon {
-  color: #9e9e9e;
-  margin-right: 8px;
-}
-
-.remember-email {
-  margin-bottom: 24px;
-  color: #555;
-}
-
-.login-button {
-  padding: 10px;
-  border-radius: 6px;
-  font-weight: 500;
-  letter-spacing: 0.5px;
-  transition: all 0.3s ease;
-  
-  &:not([disabled]):hover {
-    box-shadow: 0 5px 10px rgba(63, 81, 181, 0.3);
-    transform: translateY(-2px);
+  .card-title {
+    font-size: 24px;
+    font-weight: 500;
+    color: #333;
+    margin: 0 0 8px;
+    text-align: center;
   }
   
-  .spinner {
-    display: inline-block;
-    margin-right: 8px;
+  .card-subtitle {
+    font-size: 16px;
+    color: #666;
+    margin: 0 0 32px;
+    text-align: center;
+  }
+  
+  .form-field {
+    width: 100%;
+    margin-bottom: 24px;
+    
+    .field-prefix {
+      color: #666;
+      margin-right: 8px;
+    }
+  }
+  
+  .remember-me {
+    margin-bottom: 24px;
+    color: #666;
+  }
+  
+  .login-button {
+    width: 100%;
+    height: 44px !important;
+    font-size: 16px;
+    
+    .button-icon {
+      margin-right: 8px;
+    }
+  }
+  
+  .privacy-notice {
+    margin-top: 24px;
+    font-size: 14px;
+    color: #666;
+    text-align: center;
   }
 }
 
-.login-footer {
-  margin-top: 24px;
-  text-align: center;
-  color: #777;
-  font-size: 14px;
+// Estilos para el diálogo de registro
+.register-dialog {
+  .mat-mdc-dialog-title {
+    color: #333;
+    font-size: 20px;
+    margin-bottom: 16px;
+  }
+  
+  .mat-mdc-dialog-content {
+    color: #666;
+    font-size: 16px;
+    margin-bottom: 24px;
+  }
+  
+  .mat-mdc-dialog-actions {
+    padding: 16px;
+    gap: 8px;
+    
+    button {
+      min-width: 100px;
+    }
+  }
 }
 
-@keyframes pulse {
-  from {
-    transform: scale(1);
-    opacity: 1;
+// Responsive styles
+@media (max-width: 599px) {
+  .login-container {
+    padding: 16px;
   }
-  to {
-    transform: scale(1.1);
-    opacity: 0.8;
+  
+  .app-logo {
+    .logo-icon {
+      font-size: 36px;
+      width: 36px;
+      height: 36px;
+    }
+    
+    .app-name {
+      font-size: 28px;
+    }
+  }
+  
+  .login-card {
+    padding: 24px;
+    
+    .card-title {
+      font-size: 20px;
+    }
+    
+    .card-subtitle {
+      font-size: 14px;
+      margin-bottom: 24px;
+    }
   }
 }

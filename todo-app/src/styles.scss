@@ -41,6 +41,7 @@ html, body {
   height: 100%; 
   margin: 0;
   font-family: Roboto, "Helvetica Neue", sans-serif;
+  background-color: #f5f7fa;
 }
 
 * {
@@ -50,56 +51,87 @@ html, body {
 .mat-mdc-card {
   border-radius: 8px !important;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1) !important;
+  background-color: white !important;
 }
 
 .mat-mdc-form-field {
   width: 100%;
 }
 
+.mat-mdc-checkbox .mdc-checkbox {
+  padding: 0 !important;
+  margin: 0 !important;
+}
+
 @media (max-width: 599px) {
   .mat-mdc-card {
     border-radius: 0 !important;
+  }
+  
+  .mat-mdc-dialog-container {
+    margin: 16px !important;
   }
 }
 
 // Estilos personalizados para los snackbars
 .success-snackbar {
-  background: #4caf50;
-  color: white;
+  background: #4caf50 !important;
+  color: white !important;
   
   .mat-simple-snackbar-action {
-    color: white;
+    color: white !important;
   }
 }
 
 .error-snackbar {
-  background: #f44336;
-  color: white;
+  background: #f44336 !important;
+  color: white !important;
   
   .mat-simple-snackbar-action {
-    color: white;
+    color: white !important;
+  }
+}
+
+// Task card styles
+.task-card {
+  .mat-mdc-card-content {
+    padding: 0 !important;
+  }
+  
+  &.completed-task {
+    border-left: 4px solid #4caf50 !important;
+  }
+}
+
+// Form styles
+.task-form {
+  .mat-mdc-form-field-subscript-wrapper {
+    height: 0 !important;
+  }
+}
+
+// Button styles
+.mat-mdc-button,
+.mat-mdc-raised-button,
+.mat-mdc-outlined-button {
+  &:not(:disabled) {
+    height: 36px !important;
+    line-height: 36px !important;
   }
 }
 
 // Mejoras generales de accesibilidad
 :focus {
-  outline: 2px solid #3f51b5;
-  outline-offset: 2px;
+  outline: 2px solid #3f51b5 !important;
+  outline-offset: 2px !important;
 }
 
 // Transiciones suaves para toda la aplicación
-* {
-  transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
-}
-
-// Tamaño de texto base para mejorar legibilidad
-body {
-  font-size: 16px;
-  line-height: 1.6;
-  
-  @media (max-width: 768px) {
-    font-size: 14px;
-  }
+.mat-mdc-card,
+.mat-mdc-button,
+.mat-mdc-checkbox,
+.mat-mdc-form-field {
+  transition: all 0.3s ease !important;
 }
 
 // Soporte para modo oscuro automático (preferencias del sistema)
@@ -107,5 +139,14 @@ body {
   body:not(.light-theme) {
     background-color: #303030;
     color: #f5f5f5;
+    
+    .mat-mdc-card {
+      background-color: #424242 !important;
+      color: #f5f5f5;
+    }
+    
+    .mat-mdc-form-field {
+      color: #f5f5f5;
+    }
   }
 }

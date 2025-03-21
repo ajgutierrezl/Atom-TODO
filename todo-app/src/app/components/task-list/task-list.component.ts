@@ -1,13 +1,12 @@
-import { Component, OnInit, ElementRef, ViewChild } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { Observable, of } from 'rxjs';
-import { Task } from '../../models/task.model';
+import { Observable, of, tap, catchError } from 'rxjs';
+import { finalize } from 'rxjs/operators';
+import { Task, FirestoreTimestamp } from '../../models/task.model';
 import { TaskService } from '../../services/task.service';
 import { AuthService } from '../../services/auth.service';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { catchError, finalize, tap } from 'rxjs/operators';
-import { TaskFormComponent } from '../task-form/task-form.component';
 import { EditTaskDialogComponent } from './edit-task-dialog/edit-task-dialog.component';
 import { DeleteTaskDialogComponent } from './delete-task-dialog/delete-task-dialog.component';
 
@@ -17,10 +16,8 @@ import { DeleteTaskDialogComponent } from './delete-task-dialog/delete-task-dial
   styleUrls: ['./task-list.component.scss']
 })
 export class TaskListComponent implements OnInit {
-  @ViewChild(TaskFormComponent) taskForm!: TaskFormComponent;
-  
   tasks$: Observable<Task[]> = of([]);
-  isLoading = false;
+  isLoading = true;
   error = false;
   completedTasks: Task[] = [];
 
@@ -29,9 +26,8 @@ export class TaskListComponent implements OnInit {
     private authService: AuthService,
     private router: Router,
     private dialog: MatDialog,
-    private snackBar: MatSnackBar,
-    private el: ElementRef
-  ) { }
+    private snackBar: MatSnackBar
+  ) {}
 
   ngOnInit(): void {
     this.loadTasks();
@@ -43,22 +39,13 @@ export class TaskListComponent implements OnInit {
 
     this.tasks$ = this.taskService.getTasks().pipe(
       tap(tasks => {
-        // Sort tasks: pending first, then completed
-        tasks.sort((a, b) => {
-          if (a.completed === b.completed) {
-            // If both have the same status, sort by date (most recent first)
-            return new Date(b.createdAt!).getTime() - new Date(a.createdAt!).getTime();
-          }
-          // Pending first
-          return a.completed ? 1 : -1;
-        });
-
-        // Save completed tasks for statistics
-        this.completedTasks = tasks.filter(task => task.completed);
+        const sortedTasks = this.sortTasksByDate(tasks);
+        this.completedTasks = sortedTasks.filter(task => task.completed);
       }),
       catchError(error => {
-        this.error = true;
         console.error('Error loading tasks:', error);
+        this.error = true;
+        this.isLoading = false;
         return of([]);
       }),
       finalize(() => {
@@ -67,43 +54,55 @@ export class TaskListComponent implements OnInit {
     );
   }
 
+  private sortTasksByDate(tasks: Task[]): Task[] {
+    return tasks.sort((a, b) => {
+      if (a.completed === b.completed) {
+        const timestampA = a.createdAt as FirestoreTimestamp;
+        const timestampB = b.createdAt as FirestoreTimestamp;
+        return timestampB._seconds - timestampA._seconds;
+      }
+      return a.completed ? 1 : -1;
+    });
+  }
+
   getCompletedCount(): number {
     return this.completedTasks.length;
   }
 
-  focusTaskForm(): void {
-    if (this.taskForm) {
-      // Scroll to the form and focus the first field
-      const formElement = this.taskForm.el.nativeElement;
-      formElement.scrollIntoView({ behavior: 'smooth' });
-      
-      // Focus on the title after a small delay to allow time for scrolling
-      setTimeout(() => {
-        this.taskForm.focusTitleInput();
-      }, 500);
-    }
-  }
-
   onTaskToggle(task: Task): void {
+    if (!task.id) {
+      console.error('Task ID is missing');
+      return;
+    }
+
     this.isLoading = true;
     
     const updatedTask: Partial<Task> = {
       completed: !task.completed
     };
     
-    this.taskService.updateTask(task.id!, updatedTask).pipe(
+    this.taskService.updateTask(task.id, updatedTask).pipe(
       finalize(() => {
         this.isLoading = false;
         this.loadTasks();
       })
     ).subscribe({
       error: (error) => {
+        this.snackBar.open('Error updating task status', 'Close', {
+          duration: 3000,
+          panelClass: 'error-snackbar'
+        });
         console.error('Error toggling task:', error);
       }
     });
   }
 
   onTaskEdit(task: Task): void {
+    if (!task.id) {
+      console.error('Task ID is missing');
+      return;
+    }
+
     const dialogRef = this.dialog.open(EditTaskDialogComponent, {
       width: '500px',
       data: { task: { ...task } }
@@ -113,7 +112,7 @@ export class TaskListComponent implements OnInit {
       if (result) {
         this.isLoading = true;
         
-        this.taskService.updateTask(task.id!, result).pipe(
+        this.taskService.updateTask(task.id, result).pipe(
           finalize(() => {
             this.isLoading = false;
             this.loadTasks();
@@ -137,41 +136,39 @@ export class TaskListComponent implements OnInit {
     });
   }
 
-  onTaskDelete(taskId: string): void {
-    // Find the task to show its details in the dialog
-    this.tasks$.subscribe(tasks => {
-      const taskToDelete = tasks.find(task => task.id === taskId);
-      
-      if (taskToDelete) {
-        const dialogRef = this.dialog.open(DeleteTaskDialogComponent, {
-          width: '450px',
-          data: { task: taskToDelete }
-        });
+  onTaskDelete(task: Task): void {
+    if (!task.id) {
+      console.error('Task ID is missing');
+      return;
+    }
+
+    const dialogRef = this.dialog.open(DeleteTaskDialogComponent, {
+      width: '450px',
+      data: { task }
+    });
+
+    dialogRef.afterClosed().subscribe(confirmed => {
+      if (confirmed) {
+        this.isLoading = true;
         
-        dialogRef.afterClosed().subscribe(confirmed => {
-          if (confirmed) {
-            this.isLoading = true;
-            
-            this.taskService.deleteTask(taskId).pipe(
-              finalize(() => {
-                this.isLoading = false;
-                this.loadTasks();
-              })
-            ).subscribe({
-              next: () => {
-                this.snackBar.open('Task deleted successfully', 'Close', { 
-                  duration: 3000,
-                  panelClass: 'success-snackbar'
-                });
-              },
-              error: (error) => {
-                this.snackBar.open('Error deleting task', 'Close', { 
-                  duration: 3000,
-                  panelClass: 'error-snackbar'
-                });
-                console.error('Error deleting task:', error);
-              }
+        this.taskService.deleteTask(task.id).pipe(
+          finalize(() => {
+            this.isLoading = false;
+            this.loadTasks();
+          })
+        ).subscribe({
+          next: () => {
+            this.snackBar.open('Task deleted successfully', 'Close', { 
+              duration: 3000,
+              panelClass: 'success-snackbar'
             });
+          },
+          error: (error) => {
+            this.snackBar.open('Error deleting task', 'Close', { 
+              duration: 3000,
+              panelClass: 'error-snackbar'
+            });
+            console.error('Error deleting task:', error);
           }
         });
       }
@@ -183,8 +180,7 @@ export class TaskListComponent implements OnInit {
     this.router.navigate(['/login']);
   }
 
-  // Function for trackBy
   trackById(index: number, task: Task): string {
-    return task.id!;
+    return task.id || '';
   }
 }

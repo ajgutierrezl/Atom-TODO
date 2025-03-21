@@ -1,8 +1,14 @@
+export interface FirestoreTimestamp {
+  _seconds: number;
+  _nanoseconds: number;
+}
+
 export interface Task {
-  id?: string;
+  id: string;
   title: string;
   description: string;
   completed: boolean;
-  createdAt: Date;
+  createdAt: FirestoreTimestamp;
+  updatedAt?: FirestoreTimestamp;
   userId: string;
 } 

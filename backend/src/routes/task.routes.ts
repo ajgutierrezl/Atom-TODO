@@ -8,19 +8,11 @@ const taskController = new TaskController();
 // Todas las rutas de tareas requieren autenticación
 taskRouter.use(authMiddleware);
 
-// Get all tasks by user
-taskRouter.get('/', taskController.findAll);
-
-// Get task by ID
-taskRouter.get('/:id', taskController.findOne);
-
-// Create task
-taskRouter.post('/', taskController.create);
-
-// Update task
-taskRouter.put('/:id', taskController.update);
-
-// Delete task
-taskRouter.delete('/:id', taskController.delete);
+// Rutas CRUD para tareas
+taskRouter.get('/', taskController.getTasks);
+taskRouter.get('/:id', taskController.getTask);
+taskRouter.post('/', taskController.createTask);
+taskRouter.put('/:id', taskController.updateTask);
+taskRouter.delete('/:id', taskController.deleteTask);
 
 export default taskRouter; 

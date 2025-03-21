@@ -1,12 +1,10 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Inject } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
-import { MatDialog, MatDialogRef } from '@angular/material/dialog';
+import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { trigger, transition, style, animate } from '@angular/animations';
-import { Inject } from '@angular/core';
-import { MAT_DIALOG_DATA } from '@angular/material/dialog';
 
 @Component({
   selector: 'app-login',
@@ -31,14 +29,15 @@ export class LoginComponent implements OnInit {
   private readonly EMAIL_STORAGE_KEY = 'todo_app_saved_email';
 
   constructor(
-    private fb: FormBuilder,
+    private formBuilder: FormBuilder,
     private authService: AuthService,
     private router: Router,
     private dialog: MatDialog,
     private snackBar: MatSnackBar
   ) {
-    this.loginForm = this.fb.group({
-      email: ['', [Validators.required, Validators.email]]
+    this.loginForm = this.formBuilder.group({
+      email: ['', [Validators.required, Validators.email]],
+      rememberEmail: [false]
     });
   }
 
@@ -55,7 +54,7 @@ export class LoginComponent implements OnInit {
     }
     
     // Redirect if already logged in
-    if (this.authService.isLoggedIn()) {
+    if (this.authService.getCurrentUser()) {
       this.router.navigate(['/tasks']);
     }
   }
@@ -71,39 +70,34 @@ export class LoginComponent implements OnInit {
   }
 
   onSubmit(): void {
-    if (this.loginForm.invalid) {
-      // Mark controls as touched to show errors
-      this.loginForm.markAllAsTouched();
-      return;
-    }
-
-    const email = this.loginForm.get('email')?.value;
-    
-    // Save email if option is enabled
-    if (this.rememberEmail) {
-      localStorage.setItem(this.EMAIL_STORAGE_KEY, email);
-    }
-    
-    this.isLoading = true;
-
-    this.authService.login(email).subscribe({
-      next: () => {
-        this.isLoading = false;
-        // Show welcome message
-        this.snackBar.open('Welcome back!', 'Close', { 
-          duration: 3000,
-          panelClass: 'success-snackbar'
-        });
-        this.router.navigate(['/tasks']);
-      },
-      error: () => {
-        this.isLoading = false;
-        this.showRegisterDialog(email);
+    if (this.loginForm.valid) {
+      this.isLoading = true;
+      const email = this.loginForm.get('email')?.value;
+      
+      // Save email if option is enabled
+      if (this.rememberEmail) {
+        localStorage.setItem(this.EMAIL_STORAGE_KEY, email);
       }
-    });
+      
+      this.authService.login(email).subscribe({
+        next: () => {
+          this.isLoading = false;
+          // Show welcome message
+          this.snackBar.open('Welcome back!', 'Close', { 
+            duration: 3000,
+            panelClass: 'success-snackbar'
+          });
+          this.router.navigate(['/tasks']);
+        },
+        error: () => {
+          this.isLoading = false;
+          this.openRegisterDialog(email);
+        }
+      });
+    }
   }
 
-  private showRegisterDialog(email: string): void {
+  private openRegisterDialog(email: string): void {
     const dialogRef = this.dialog.open(UserRegisterDialogComponent, {
       width: '400px',
       data: { email }

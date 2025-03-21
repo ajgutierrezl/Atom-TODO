@@ -56,7 +56,7 @@
               [task]="task"
               (taskToggled)="onTaskToggle(task)"
               (taskEdited)="onTaskEdit(task)"
-              (taskDeleted)="onTaskDelete(task.id!)">
+              (taskDeleted)="onTaskDelete(task)">
             </app-task-item>
           </mat-card>
         </div>
@@ -66,7 +66,7 @@
             <mat-icon class="empty-icon">assignment</mat-icon>
             <h3>You have no pending tasks</h3>
             <p class="empty-desc">Create your first task using the form above</p>
-            <button mat-raised-button color="primary" (click)="focusTaskForm()">
+            <button mat-raised-button color="primary" (click)="loadTasks()">
               <mat-icon>add</mat-icon> Create Task
             </button>
           </div>

@@ -4,22 +4,19 @@ import { Observable, throwError } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 import { Task } from '../models/task.model';
 import { environment } from '../../environments/environment';
-import { AuthService } from './auth.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class TaskService {
-  private apiUrl = environment.apiUrl;
+  private apiUrl = `${environment.apiUrl}/tasks`;
 
   constructor(
-    private http: HttpClient,
-    private authService: AuthService
+    private http: HttpClient
   ) { }
 
   getTasks(): Observable<Task[]> {
-    const userId = this.authService.getCurrentUser()?.id;
-    return this.http.get<Task[]>(`${this.apiUrl}/tasks?userId=${userId}`)
+    return this.http.get<Task[]>(this.apiUrl)
       .pipe(
         catchError(error => {
           return throwError(() => new Error('Error getting tasks'));
@@ -27,11 +24,10 @@ export class TaskService {
       );
   }
 
-  createTask(taskData: {title: string, description: string, completed: boolean}): Observable<Task> {
-    return this.http.post<Task>(`${this.apiUrl}/tasks`, {
+  createTask(taskData: {title: string, description: string}): Observable<Task> {
+    return this.http.post<Task>(this.apiUrl, {
       ...taskData,
-      createdAt: new Date(),
-      userId: this.authService.getCurrentUser()?.id
+      completed: false
     }).pipe(
       catchError(error => {
         return throwError(() => new Error('Error creating task'));
@@ -40,7 +36,7 @@ export class TaskService {
   }
 
   updateTask(id: string, task: Partial<Task>): Observable<Task> {
-    return this.http.put<Task>(`${this.apiUrl}/tasks/${id}`, task)
+    return this.http.put<Task>(`${this.apiUrl}/${id}`, task)
       .pipe(
         catchError(error => {
           return throwError(() => new Error('Error updating task'));
@@ -49,7 +45,7 @@ export class TaskService {
   }
 
   deleteTask(id: string): Observable<void> {
-    return this.http.delete<void>(`${this.apiUrl}/tasks/${id}`)
+    return this.http.delete<void>(`${this.apiUrl}/${id}`)
       .pipe(
         catchError(error => {
           return throwError(() => new Error('Error deleting task'));
