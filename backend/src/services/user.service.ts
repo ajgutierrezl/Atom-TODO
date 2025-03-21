@@ -21,6 +21,27 @@ export class UserService {
     };
   }
 
+  async findById(id: string): Promise<User | null> {
+    try {
+      const doc = await this.collection.doc(id).get();
+
+      if (!doc.exists) {
+        return null;
+      }
+
+      const userData = doc.data() as any;
+
+      return {
+        id: doc.id,
+        ...userData,
+        createdAt: userData.createdAt instanceof Date ? userData.createdAt : userData.createdAt.toDate()
+      };
+    } catch (error) {
+      console.error('Error finding user by ID:', error);
+      return null;
+    }
+  }
+
   async create(userDTO: UserDTO): Promise<User> {
     const user: Omit<User, 'id'> = {
       email: userDTO.email,
