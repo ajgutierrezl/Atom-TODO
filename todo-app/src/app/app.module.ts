@@ -24,6 +24,7 @@ import { TaskListComponent } from './components/task-list/task-list.component';
 import { TaskFormComponent } from './components/task-form/task-form.component';
 import { TaskItemComponent } from './components/task-item/task-item.component';
 import { EditTaskDialogComponent } from './components/task-list/edit-task-dialog/edit-task-dialog.component';
+import { DeleteTaskDialogComponent } from './components/task-list/delete-task-dialog/delete-task-dialog.component';
 
 // Módulos
 import { AppRoutingModule } from './app-routing.module';
@@ -36,7 +37,8 @@ import { AppRoutingModule } from './app-routing.module';
     TaskListComponent,
     TaskFormComponent,
     TaskItemComponent,
-    EditTaskDialogComponent
+    EditTaskDialogComponent,
+    DeleteTaskDialogComponent
   ],
   imports: [
     BrowserModule,

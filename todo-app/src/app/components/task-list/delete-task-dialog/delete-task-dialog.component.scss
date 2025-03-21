@@ -1,0 +1,69 @@
+.delete-dialog-container {
+  padding: 0 16px 16px;
+}
+
+.dialog-title {
+  display: flex;
+  align-items: center;
+  color: #f44336;
+  margin-bottom: 16px;
+
+  .title-icon {
+    margin-right: 8px;
+    font-size: 24px;
+  }
+}
+
+.dialog-content {
+  display: flex;
+  flex-direction: column;
+  min-width: 350px;
+  max-width: 550px;
+}
+
+.task-details {
+  margin: 16px 0;
+  padding: 16px;
+  background-color: #f5f5f5;
+  border-radius: 4px;
+  border-left: 4px solid #f44336;
+}
+
+.task-title {
+  margin: 0 0 8px 0;
+  font-size: 16px;
+  font-weight: 500;
+  color: #333;
+}
+
+.task-description {
+  margin: 0;
+  color: #616161;
+  font-size: 14px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+}
+
+.warning-text {
+  color: #f44336;
+  font-weight: 500;
+  margin-top: 16px;
+}
+
+.spinner {
+  display: inline-block;
+  margin-right: 8px;
+}
+
+.delete-button {
+  min-width: 100px;
+}
+
+@media (max-width: 600px) {
+  .dialog-content {
+    min-width: 250px;
+  }
+} 

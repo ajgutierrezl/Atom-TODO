@@ -1,0 +1,28 @@
+<div class="delete-dialog-container">
+  <h2 mat-dialog-title class="dialog-title">
+    <mat-icon class="title-icon">warning</mat-icon>
+    Confirm Deletion
+  </h2>
+  
+  <mat-dialog-content class="dialog-content">
+    <p>Are you sure you want to delete the following task?</p>
+    <div class="task-details">
+      <h3 class="task-title">{{ data.task.title }}</h3>
+      <p class="task-description">{{ data.task.description }}</p>
+    </div>
+    <p class="warning-text">This action cannot be undone.</p>
+  </mat-dialog-content>
+  
+  <mat-dialog-actions align="end">
+    <button mat-button (click)="onCancel()" type="button">Cancel</button>
+    <button 
+      mat-raised-button 
+      color="warn" 
+      (click)="onConfirm()" 
+      [disabled]="isLoading"
+      class="delete-button">
+      <mat-spinner *ngIf="isLoading" diameter="20" class="spinner"></mat-spinner>
+      <span *ngIf="!isLoading">Delete</span>
+    </button>
+  </mat-dialog-actions>
+</div> 

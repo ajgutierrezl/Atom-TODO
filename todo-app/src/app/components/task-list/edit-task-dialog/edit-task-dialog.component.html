@@ -1,45 +1,45 @@
 <div class="edit-dialog-container">
   <h2 mat-dialog-title class="dialog-title">
     <mat-icon class="title-icon">edit</mat-icon>
-    Editar Tarea
+    Edit Task
   </h2>
   
   <form [formGroup]="editForm" (ngSubmit)="onSubmit()">
     <mat-dialog-content class="dialog-content">
       <mat-form-field appearance="outline" class="form-field">
-        <mat-label>Título</mat-label>
-        <input matInput formControlName="title" placeholder="Escribe un título para tu tarea">
+        <mat-label>Title</mat-label>
+        <input matInput formControlName="title" placeholder="Write a title for your task">
         <mat-hint align="end">{{editForm.get('title')?.value?.length || 0}}/100</mat-hint>
         <mat-error *ngIf="editForm.controls['title'].hasError('required')">
-          El título es obligatorio
+          Title is required
         </mat-error>
         <mat-error *ngIf="editForm.controls['title'].hasError('maxlength')">
-          El título no puede exceder los 100 caracteres
+          Title cannot exceed 100 characters
         </mat-error>
       </mat-form-field>
 
       <mat-form-field appearance="outline" class="form-field">
-        <mat-label>Descripción</mat-label>
-        <textarea matInput formControlName="description" placeholder="Describe los detalles de la tarea" rows="3"></textarea>
+        <mat-label>Description</mat-label>
+        <textarea matInput formControlName="description" placeholder="Describe the details of your task" rows="3"></textarea>
         <mat-hint align="end">{{editForm.get('description')?.value?.length || 0}}/500</mat-hint>
         <mat-error *ngIf="editForm.controls['description'].hasError('required')">
-          La descripción es obligatoria
+          Description is required
         </mat-error>
         <mat-error *ngIf="editForm.controls['description'].hasError('maxlength')">
-          La descripción no puede exceder los 500 caracteres
+          Description cannot exceed 500 characters
         </mat-error>
       </mat-form-field>
 
       <mat-checkbox formControlName="completed" color="primary" class="completed-checkbox">
-        Tarea completada
+        Task completed
       </mat-checkbox>
     </mat-dialog-content>
     
     <mat-dialog-actions align="end">
-      <button mat-button (click)="onCancel()" type="button">Cancelar</button>
+      <button mat-button (click)="onCancel()" type="button">Cancel</button>
       <button mat-raised-button color="primary" type="submit" [disabled]="editForm.invalid || isLoading">
         <mat-spinner *ngIf="isLoading" diameter="20" class="spinner"></mat-spinner>
-        <span *ngIf="!isLoading">Guardar</span>
+        <span *ngIf="!isLoading">Save</span>
       </button>
     </mat-dialog-actions>
   </form>

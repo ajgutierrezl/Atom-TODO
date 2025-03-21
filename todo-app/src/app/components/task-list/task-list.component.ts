@@ -9,6 +9,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { catchError, finalize, tap } from 'rxjs/operators';
 import { TaskFormComponent } from '../task-form/task-form.component';
 import { EditTaskDialogComponent } from './edit-task-dialog/edit-task-dialog.component';
+import { DeleteTaskDialogComponent } from './delete-task-dialog/delete-task-dialog.component';
 
 @Component({
   selector: 'app-task-list',
@@ -137,16 +138,42 @@ export class TaskListComponent implements OnInit {
   }
 
   onTaskDelete(taskId: string): void {
-    this.isLoading = true;
-    
-    this.taskService.deleteTask(taskId).pipe(
-      finalize(() => {
-        this.isLoading = false;
-        this.loadTasks();
-      })
-    ).subscribe({
-      error: (error) => {
-        console.error('Error deleting task:', error);
+    // Find the task to show its details in the dialog
+    this.tasks$.subscribe(tasks => {
+      const taskToDelete = tasks.find(task => task.id === taskId);
+      
+      if (taskToDelete) {
+        const dialogRef = this.dialog.open(DeleteTaskDialogComponent, {
+          width: '450px',
+          data: { task: taskToDelete }
+        });
+        
+        dialogRef.afterClosed().subscribe(confirmed => {
+          if (confirmed) {
+            this.isLoading = true;
+            
+            this.taskService.deleteTask(taskId).pipe(
+              finalize(() => {
+                this.isLoading = false;
+                this.loadTasks();
+              })
+            ).subscribe({
+              next: () => {
+                this.snackBar.open('Task deleted successfully', 'Close', { 
+                  duration: 3000,
+                  panelClass: 'success-snackbar'
+                });
+              },
+              error: (error) => {
+                this.snackBar.open('Error deleting task', 'Close', { 
+                  duration: 3000,
+                  panelClass: 'error-snackbar'
+                });
+                console.error('Error deleting task:', error);
+              }
+            });
+          }
+        });
       }
     });
   }
