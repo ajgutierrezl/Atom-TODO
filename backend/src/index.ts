@@ -4,18 +4,19 @@ import dotenv from 'dotenv';
 import { initializeFirebase } from './config/firebase';
 import taskRouter from './routes/task.routes';
 import userRouter from './routes/user.routes';
+import * as functions from 'firebase-functions';
 
 // Cargar variables de entorno
 dotenv.config();
 
 const app = express();
-const port = process.env.PORT || 5000;
+const port = process.env.SERVER_PORT || 5000;
 
 // Configurar middlewares básicos primero
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cors({
-  origin: process.env.CORS_ORIGIN || 'http://localhost:4200',
+  origin: true,
   credentials: true
 }));
 
@@ -26,7 +27,7 @@ app.use((req, res, next) => {
 });
 
 // Ruta de health check
-app.get('/api/health', (req, res) => {
+app.get('/health', (req, res) => {
   res.json({ status: 'OK', timestamp: new Date().toISOString() });
 });
 
@@ -42,21 +43,14 @@ try {
 
 if (firebaseInitialized) {
   // Configurar rutas solo si Firebase está inicializado
-  app.use('/api/auth', userRouter);
-  app.use('/api/tasks', taskRouter);
+  app.use('/auth', userRouter);
+  app.use('/tasks', taskRouter);
 } else {
   // Si Firebase no está inicializado, todas las rutas retornarán error 503
-  app.use('/api/auth', (req, res) => {
-    res.status(503).json({ 
+  app.use('/*', (req, res) => {
+    res.status(503).json({
       error: 'Service Unavailable',
-      message: 'Authentication service is currently unavailable'
-    });
-  });
-  
-  app.use('/api/tasks', (req, res) => {
-    res.status(503).json({ 
-      error: 'Service Unavailable',
-      message: 'Task service is currently unavailable'
+      message: 'Firebase initialization failed'
     });
   });
 }
@@ -70,7 +64,7 @@ app.use((req, res) => {
 });
 
 // Manejador de errores global
-app.use((err: any, req: express.Request, res: express.Response, next: express.NextFunction) => {
+app.use((err: any, req: express.Request, res: express.Response, _next: express.NextFunction) => {
   console.error('Error:', err);
   res.status(err.status || 500).json({ 
     error: err.name || 'Internal Server Error',
@@ -79,28 +73,30 @@ app.use((err: any, req: express.Request, res: express.Response, next: express.Ne
   });
 });
 
-// For Firebase Functions support
-export const api = app;
+// Exportar la función para Firebase Functions
+export const api = functions.https.onRequest(app);
 
-// Iniciar servidor
-const server = app.listen(port, () => {
-  console.log(`Servidor corriendo en http://localhost:${port}`);
-  console.log(`Estado de Firebase: ${firebaseInitialized ? 'Inicializado' : 'No inicializado'}`);
-});
-
-// Manejar señales de terminación
-process.on('SIGTERM', () => {
-  console.log('SIGTERM recibido. Cerrando servidor...');
-  server.close(() => {
-    console.log('Servidor cerrado.');
-    process.exit(0);
+// Solo iniciar el servidor si no estamos en entorno de Firebase Functions
+if (process.env.NODE_ENV !== 'production') {
+  const server = app.listen(port, () => {
+    console.log(`Servidor corriendo en http://localhost:${port}`);
+    console.log(`Estado de Firebase: ${firebaseInitialized ? 'Inicializado' : 'No inicializado'}`);
   });
-});
 
-process.on('SIGINT', () => {
-  console.log('SIGINT recibido. Cerrando servidor...');
-  server.close(() => {
-    console.log('Servidor cerrado.');
-    process.exit(0);
+  // Manejar señales de terminación
+  process.on('SIGTERM', () => {
+    console.log('SIGTERM recibido. Cerrando servidor...');
+    server.close(() => {
+      console.log('Servidor cerrado.');
+      process.exit(0);
+    });
   });
-}); 
+
+  process.on('SIGINT', () => {
+    console.log('SIGINT recibido. Cerrando servidor...');
+    server.close(() => {
+      console.log('Servidor cerrado.');
+      process.exit(0);
+    });
+  });
+} 

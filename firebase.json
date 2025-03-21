@@ -1,10 +1,22 @@
 {
   "hosting": {
-    "public": "todo-app/dist/todo-app",
+    "site": "atom-c184a",
+    "public": "todo-app/dist/browser",
     "ignore": [
       "firebase.json",
       "**/.*",
       "**/node_modules/**"
+    ],
+    "headers": [
+      {
+        "source": "**",
+        "headers": [
+          {
+            "key": "Access-Control-Allow-Origin",
+            "value": "*"
+          }
+        ]
+      }
     ],
     "rewrites": [
       {
@@ -15,14 +27,16 @@
         "source": "**",
         "destination": "/index.html"
       }
-    ]
+    ],
+    "cleanUrls": true,
+    "trailingSlash": false
   },
   "functions": {
     "source": "backend",
     "predeploy": [
-      "npm --prefix \"$RESOURCE_DIR\" run lint",
       "npm --prefix \"$RESOURCE_DIR\" run build"
     ],
+    "codebase": "default",
     "runtime": "nodejs18"
   }
-} 
+}

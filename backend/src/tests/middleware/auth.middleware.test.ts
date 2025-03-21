@@ -12,7 +12,7 @@ jest.mock('../../services/token.service', () => {
 });
 
 // Ahora importamos el resto después de definir los mocks
-import { Request, Response, NextFunction } from 'express';
+import { Response, NextFunction } from 'express';
 import { authMiddleware, optionalAuthMiddleware, AuthRequest } from '../../middleware/auth.middleware';
 
 describe('Auth Middleware', () => {

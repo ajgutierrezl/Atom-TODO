@@ -1,4 +1,4 @@
 export const environment = {
   production: true,
-  apiUrl: '/api'
+  apiUrl: 'https://us-central1-atom-c184a.cloudfunctions.net/api'
 }; 

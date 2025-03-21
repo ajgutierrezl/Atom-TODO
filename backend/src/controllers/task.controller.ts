@@ -1,4 +1,4 @@
-import { Request, Response } from 'express';
+import { Response } from 'express';
 import { TaskService } from '../services/task.service';
 import { AuthRequest } from '../middleware/auth.middleware';
 import { TaskDTO } from '../models/task.model';

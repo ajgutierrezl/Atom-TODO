@@ -23,7 +23,7 @@ export class AuthInterceptor implements HttpInterceptor {
   ) {}
 
   intercept(request: HttpRequest<unknown>, next: HttpHandler): Observable<HttpEvent<unknown>> {
-    // No interceptar las rutas de autenticación
+    // No interceptar las rutas de autenticación para login y registro
     if (request.url.includes('/auth/login') || request.url.includes('/auth/register')) {
       return next.handle(request);
     }

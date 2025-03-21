@@ -2,6 +2,7 @@ import { Request, Response } from 'express';
 import { UserService } from '../services/user.service';
 import { TokenService } from '../services/token.service';
 import { UserDTO } from '../models/user.model';
+import { AuthRequest } from '../middleware/auth.middleware';
 
 export class UserController {
   private userService: UserService;
@@ -72,9 +73,8 @@ export class UserController {
     }
   };
 
-  getProfile = async (req: Request, res: Response): Promise<void> => {
+  getProfile = async (req: AuthRequest, res: Response): Promise<void> => {
     try {
-      // @ts-ignore - Extendido por el middleware
       const userId = req.user?.sub;
       
       if (!userId) {
@@ -96,9 +96,8 @@ export class UserController {
     }
   };
 
-  refreshToken = async (req: Request, res: Response): Promise<void> => {
+  refreshToken = async (req: AuthRequest, res: Response): Promise<void> => {
     try {
-      // @ts-ignore - Extendido por el middleware
       const userId = req.user?.sub;
       
       if (!userId) {

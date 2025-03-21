@@ -1,5 +1,18 @@
 {
   "projects": {
-    "default": "atom-todo-app"
-  }
-} 
+    "default": "atom-c184a"
+  },
+  "targets": {
+    "atom-c184a": {
+      "hosting": {
+        "atom-c184a": [
+          "atom-c184a"
+        ],
+        "staging": [
+          "atom-todo-app-12345"
+        ]
+      }
+    }
+  },
+  "etags": {}
+}
