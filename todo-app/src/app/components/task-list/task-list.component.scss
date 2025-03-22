@@ -209,31 +209,30 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 24px;
+  margin-bottom: 1rem;
   
   h2 {
-    font-size: 20px;
-    font-weight: 500;
-    color: #333;
-    margin: 0;
     display: flex;
     align-items: center;
+    margin: 0;
     
     .section-icon {
       margin-right: 8px;
-      color: #3f51b5;
-      font-size: 24px;
-      height: 24px;
-      width: 24px;
+      color: var(--primary-color);
     }
   }
   
-  .refresh-button {
-    border-radius: 20px;
-    padding: 4px 16px;
-    
-    mat-icon {
-      margin-right: 4px;
+  .section-actions {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  
+  .sort-options {
+    .mat-button-toggle {
+      .toggle-label {
+        margin-left: 4px;
+      }
     }
   }
 }
@@ -418,4 +417,5 @@
     padding: 32px 20px;
   }
 }
+
 

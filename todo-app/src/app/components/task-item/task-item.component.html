@@ -1,4 +1,5 @@
 <mat-card class="task-card" [class.completed]="task.completed">
+  <div class="priority-indicator" [ngClass]="priorityClass"></div>
   <mat-card-content>
     <div class="task-header">
       <mat-checkbox
@@ -28,6 +29,9 @@
     <div class="task-footer">
       <span class="task-date" matTooltip="Created on {{createdAtFormatted}}">
         Created: {{ createdAtFormatted }}
+      </span>
+      <span *ngIf="hasPriority" class="task-priority" [ngClass]="priorityClass" matTooltip="Prioridad: {{priorityLabel}}">
+        <mat-icon class="priority-icon">{{priorityIcon}}</mat-icon> {{priorityLabel}}
       </span>
       <span class="task-status" *ngIf="task.completed" matTooltip="This task has been completed">
         <mat-icon class="status-icon">done_all</mat-icon> Completed

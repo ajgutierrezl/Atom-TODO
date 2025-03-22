@@ -36,9 +36,21 @@
           <mat-icon class="section-icon">list_alt</mat-icon>
           Task List
         </h2>
-        <button mat-button color="accent" (click)="loadTasks()" class="refresh-button" matTooltip="Reload tasks">
-          <mat-icon>refresh</mat-icon> Refresh
-        </button>
+        <div class="section-actions">
+          <mat-button-toggle-group [value]="sortOption" (change)="changeSortOption($event.source.value)" class="sort-options" aria-label="Sort options">
+            <mat-button-toggle value="date" matTooltip="Ordenar por fecha">
+              <mat-icon>date_range</mat-icon>
+              <span class="toggle-label">Fecha</span>
+            </mat-button-toggle>
+            <mat-button-toggle value="priority" matTooltip="Ordenar por prioridad">
+              <mat-icon>priority_high</mat-icon>
+              <span class="toggle-label">Prioridad</span>
+            </mat-button-toggle>
+          </mat-button-toggle-group>
+          <button mat-button color="accent" (click)="loadTasks()" class="refresh-button" matTooltip="Reload tasks">
+            <mat-icon>refresh</mat-icon> Refresh
+          </button>
+        </div>
       </div>
       
       <div *ngIf="isLoading" class="loading-container">

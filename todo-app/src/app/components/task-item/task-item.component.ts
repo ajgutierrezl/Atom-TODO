@@ -44,4 +44,34 @@ export class TaskItemComponent {
       return 'Invalid date';
     }
   }
+
+  get hasPriority(): boolean {
+    return !!this.task.priority;
+  }
+
+  get priorityIcon(): string {
+    if (!this.task.priority) return 'drag_handle';
+    
+    switch (this.task.priority) {
+      case 'high': return 'priority_high';
+      case 'medium': return 'drag_handle';
+      case 'low': return 'low_priority';
+      default: return 'drag_handle';
+    }
+  }
+
+  get priorityLabel(): string {
+    if (!this.task.priority) return 'Media';
+    
+    switch (this.task.priority) {
+      case 'high': return 'Alta';
+      case 'medium': return 'Media';
+      case 'low': return 'Baja';
+      default: return 'Media';
+    }
+  }
+
+  get priorityClass(): string {
+    return `priority-${this.task.priority || 'medium'}`;
+  }
 }

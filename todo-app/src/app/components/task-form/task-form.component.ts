@@ -14,6 +14,11 @@ export class TaskFormComponent {
   
   taskForm: FormGroup;
   isLoading = false;
+  priorityOptions = [
+    { value: 'high', label: 'Alta', icon: 'priority_high' },
+    { value: 'medium', label: 'Media', icon: 'drag_handle' },
+    { value: 'low', label: 'Baja', icon: 'low_priority' }
+  ];
 
   constructor(
     private fb: FormBuilder,
@@ -23,7 +28,8 @@ export class TaskFormComponent {
   ) {
     this.taskForm = this.fb.group({
       title: ['', [Validators.required, Validators.maxLength(100)]],
-      description: ['', [Validators.required, Validators.maxLength(500)]]
+      description: ['', [Validators.required, Validators.maxLength(500)]],
+      priority: ['medium', Validators.required]
     });
   }
 
@@ -33,16 +39,20 @@ export class TaskFormComponent {
     }
 
     this.isLoading = true;
-    const { title, description } = this.taskForm.value;
+    const { title, description, priority } = this.taskForm.value;
+
+    console.log('Creating task with priority:', priority);
 
     this.taskService.createTask({ 
       title, 
       description,
-      completed: false
-    } as any).subscribe({
+      priority
+    }).subscribe({
       next: () => {
         this.isLoading = false;
-        this.taskForm.reset();
+        this.taskForm.reset({
+          priority: 'medium'
+        });
         this.snackBar.open('Task created successfully', 'Close', { 
           duration: 3000,
           panelClass: 'success-snackbar'
@@ -64,5 +74,11 @@ export class TaskFormComponent {
     if (this.titleInput) {
       this.titleInput.nativeElement.focus();
     }
+  }
+  
+  // Método para obtener la etiqueta de la prioridad seleccionada
+  getPriorityInfo(value: string | null) {
+    if (!value) return this.priorityOptions.find(opt => opt.value === 'medium');
+    return this.priorityOptions.find(opt => opt.value === value) || this.priorityOptions[1]; // Default: medium
   }
 }

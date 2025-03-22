@@ -8,6 +8,7 @@ export interface Task {
   title: string;
   description: string;
   completed: boolean;
+  priority?: 'high' | 'medium' | 'low';
   createdAt: FirestoreTimestamp;
   updatedAt?: FirestoreTimestamp;
   userId: string;

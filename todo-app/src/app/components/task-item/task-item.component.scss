@@ -260,3 +260,42 @@
     }
   }
 }
+
+.priority-indicator {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 4px;
+  height: 100%;
+  border-top-left-radius: 4px;
+  border-bottom-left-radius: 4px;
+}
+
+.priority-high {
+  background-color: #f44336;
+  color: #f44336;
+}
+
+.priority-medium {
+  background-color: #ff9800;
+  color: #ff9800;
+}
+
+.priority-low {
+  background-color: #4caf50;
+  color: #4caf50;
+}
+
+.task-priority {
+  display: flex;
+  align-items: center;
+  font-size: 0.85rem;
+  margin-right: 12px;
+  
+  .priority-icon {
+    font-size: 18px;
+    margin-right: 4px;
+    height: 18px;
+    width: 18px;
+  }
+}

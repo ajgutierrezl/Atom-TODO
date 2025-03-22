@@ -11,6 +11,11 @@ import { Task } from '../../../models/task.model';
 export class EditTaskDialogComponent implements OnInit {
   editForm: FormGroup;
   isLoading = false;
+  priorityOptions = [
+    { value: 'high', label: 'Alta', icon: 'priority_high' },
+    { value: 'medium', label: 'Media', icon: 'drag_handle' },
+    { value: 'low', label: 'Baja', icon: 'low_priority' }
+  ];
   
   constructor(
     private fb: FormBuilder,
@@ -20,16 +25,20 @@ export class EditTaskDialogComponent implements OnInit {
     this.editForm = this.fb.group({
       title: ['', [Validators.required, Validators.maxLength(100)]],
       description: ['', [Validators.required, Validators.maxLength(500)]],
-      completed: [false]
+      completed: [false],
+      priority: ['medium', Validators.required]
     });
   }
   
   ngOnInit(): void {
+    console.log('Editing task:', this.data.task);
+    
     // Inicializar el formulario con los datos actuales de la tarea
     this.editForm.patchValue({
-      title: this.data.task.title,
-      description: this.data.task.description,
-      completed: this.data.task.completed
+      title: this.data.task.title || '',
+      description: this.data.task.description || '',
+      completed: this.data.task.completed || false,
+      priority: this.data.task.priority || 'medium'
     });
   }
   
@@ -48,5 +57,11 @@ export class EditTaskDialogComponent implements OnInit {
   
   onCancel(): void {
     this.dialogRef.close();
+  }
+  
+  // Método para obtener la etiqueta de la prioridad seleccionada
+  getPriorityInfo(value: string | null) {
+    if (!value) return this.priorityOptions.find(opt => opt.value === 'medium');
+    return this.priorityOptions.find(opt => opt.value === value) || this.priorityOptions[1]; // Default: medium
   }
 } 

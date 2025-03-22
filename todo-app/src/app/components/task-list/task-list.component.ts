@@ -20,6 +20,7 @@ export class TaskListComponent implements OnInit {
   isLoading = true;
   error = false;
   completedTasks: Task[] = [];
+  sortOption: 'date' | 'priority' = 'date';
 
   constructor(
     private taskService: TaskService,
@@ -39,8 +40,17 @@ export class TaskListComponent implements OnInit {
 
     this.tasks$ = this.taskService.getTasks().pipe(
       tap(tasks => {
-        const sortedTasks = this.sortTasksByDate(tasks);
-        this.completedTasks = sortedTasks.filter(task => task.completed);
+        console.log('Tasks loaded:', tasks);
+        try {
+          const sortedTasks = this.sortOption === 'date' 
+            ? this.sortTasksByDate(tasks)
+            : this.sortTasksByPriority(tasks);
+          this.completedTasks = sortedTasks.filter(task => task.completed);
+        } catch (err) {
+          console.error('Error sorting tasks:', err);
+          // Si hay error en el ordenamiento, al menos mostramos las tareas
+          this.completedTasks = tasks.filter(task => task.completed);
+        }
       }),
       catchError(error => {
         console.error('Error loading tasks:', error);
@@ -63,6 +73,40 @@ export class TaskListComponent implements OnInit {
       }
       return a.completed ? 1 : -1;
     });
+  }
+
+  private sortTasksByPriority(tasks: Task[]): Task[] {
+    const priorityWeight = {
+      'high': 3,
+      'medium': 2,
+      'low': 1
+    };
+
+    return tasks.sort((a, b) => {
+      if (a.completed === b.completed) {
+        // Ordenar por prioridad (alto a bajo)
+        // Usar 'medium' como valor por defecto si no existe la prioridad
+        const priorityA = a.priority ? priorityWeight[a.priority] : priorityWeight['medium'];
+        const priorityB = b.priority ? priorityWeight[b.priority] : priorityWeight['medium'];
+        
+        if (priorityA === priorityB) {
+          // Si la prioridad es igual, ordenar por fecha
+          const timestampA = a.createdAt as FirestoreTimestamp;
+          const timestampB = b.createdAt as FirestoreTimestamp;
+          return timestampB._seconds - timestampA._seconds;
+        }
+        
+        return priorityB - priorityA;
+      }
+      return a.completed ? 1 : -1;
+    });
+  }
+
+  changeSortOption(option: 'date' | 'priority' | any): void {
+    // Asegurar que la opción recibida es válida
+    const validOption = option === 'date' || option === 'priority' ? option : 'date';
+    this.sortOption = validOption;
+    this.loadTasks();
   }
 
   getCompletedCount(): number {

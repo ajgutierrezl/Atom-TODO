@@ -10,9 +10,12 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { MatSelectModule } from '@angular/material/select';
+import { MatButtonToggleModule } from '@angular/material/button-toggle';
 
 const MaterialComponents = [
   MatButtonModule,
+  MatButtonToggleModule,
   MatCardModule,
   MatCheckboxModule,
   MatDialogModule,
@@ -20,6 +23,7 @@ const MaterialComponents = [
   MatIconModule,
   MatInputModule,
   MatProgressSpinnerModule,
+  MatSelectModule,
   MatSnackBarModule,
   MatToolbarModule,
   MatTooltipModule

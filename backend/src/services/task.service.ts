@@ -1,23 +1,54 @@
 import { Task, TaskDTO } from '../models/task.model';
 import { getFirestore } from '../config/firebase';
+import { FieldValue } from 'firebase-admin/firestore';
 
 export class TaskService {
   private collection = 'tasks';
 
-  async findAll(userId: string): Promise<Task[]> {
+  async findAll(
+    userId: string, 
+    page: number = 1, 
+    limit: number = 10, 
+    orderBy: string = 'createdAt', 
+    order: 'asc' | 'desc' = 'desc',
+    searchTerm?: string
+  ): Promise<{ tasks: Task[], total: number }> {
     try {
       const db = getFirestore();
-      const snapshot = await db.collection(this.collection)
-        .where('userId', '==', userId)
-        .orderBy('createdAt', 'desc')
+      let query = db.collection(this.collection).where('userId', '==', userId);
+
+      // Aplicar búsqueda si hay término
+      if (searchTerm && searchTerm.trim()) {
+        // Búsqueda por título
+        query = query.where('title', '>=', searchTerm)
+                    .where('title', '<=', searchTerm + '\uf8ff');
+      }
+
+      // Obtener el total de documentos con los filtros aplicados
+      const totalSnapshot = await query.count().get();
+      const total = totalSnapshot.data().count;
+
+      // Calcular el offset
+      const offset = (page - 1) * limit;
+
+      // Aplicar ordenamiento y paginación
+      const snapshot = await query
+        .orderBy(orderBy, order)
+        .limit(limit)
+        .offset(offset)
         .get();
 
-      return snapshot.docs.map(doc => ({
+      const tasks = snapshot.docs.map(doc => ({
         id: doc.id,
         ...doc.data()
       })) as Task[];
+
+      return {
+        tasks,
+        total
+      };
     } catch (error) {
-      console.error('Error finding tasks:', error);
+      console.error('Error al obtener tareas:', error);
       throw error;
     }
   }
@@ -47,6 +78,7 @@ export class TaskService {
       const docRef = await db.collection(this.collection).add({
         ...taskData,
         completed: false,
+        priority: taskData.priority || 'medium',
         createdAt: new Date(),
         updatedAt: new Date()
       });

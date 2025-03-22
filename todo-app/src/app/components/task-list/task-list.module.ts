@@ -11,6 +11,9 @@ import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatCardModule } from '@angular/material/card';
+import { MatButtonToggleModule } from '@angular/material/button-toggle';
+import { MatSelectModule } from '@angular/material/select';
+import { MatTooltipModule } from '@angular/material/tooltip';
 
 import { TaskListComponent } from './task-list.component';
 import { TaskFormComponent } from './task-form/task-form.component';
@@ -32,12 +35,15 @@ import { TaskItemComponent } from './task-item/task-item.component';
     MatFormFieldModule,
     MatInputModule,
     MatButtonModule,
+    MatButtonToggleModule,
     MatIconModule,
     MatDialogModule,
+    MatSelectModule,
     MatSnackBarModule,
     MatCheckboxModule,
     MatProgressSpinnerModule,
     MatToolbarModule,
+    MatTooltipModule,
     MatCardModule
   ],
   exports: [
