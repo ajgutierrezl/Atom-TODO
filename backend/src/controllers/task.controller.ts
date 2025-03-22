@@ -19,7 +19,24 @@ export class TaskController {
         return;
       }
 
-      const tasks = await this.taskService.findAll(userId);
+      // Parámetros de búsqueda y paginación
+      const searchTerm = req.query.search as string || undefined;
+      const page = parseInt(req.query.page as string) || 1;
+      const limit = parseInt(req.query.limit as string) || 10;
+      const orderBy = (req.query.orderBy as string) || 'createdAt';
+      const order = (req.query.order as 'asc' | 'desc') || 'desc';
+
+      console.log('Search params:', { searchTerm, page, limit, orderBy, order });
+
+      const tasks = await this.taskService.findAll(
+        userId,
+        page,
+        limit,
+        orderBy,
+        order,
+        searchTerm
+      );
+      
       res.status(200).json(tasks);
     } catch (error) {
       console.error('Error al obtener tareas:', error);

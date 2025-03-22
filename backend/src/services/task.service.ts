@@ -17,34 +17,69 @@ export class TaskService {
       const db = getFirestore();
       let query = db.collection(this.collection).where('userId', '==', userId);
 
-      // Aplicar búsqueda si hay término
-      if (searchTerm && searchTerm.trim()) {
-        // Búsqueda por título
-        query = query.where('title', '>=', searchTerm)
-                    .where('title', '<=', searchTerm + '\uf8ff');
-      }
-
-      // Obtener el total de documentos con los filtros aplicados
-      const totalSnapshot = await query.count().get();
-      const total = totalSnapshot.data().count;
-
-      // Calcular el offset
-      const offset = (page - 1) * limit;
-
-      // Aplicar ordenamiento y paginación
-      const snapshot = await query
-        .orderBy(orderBy, order)
-        .limit(limit)
-        .offset(offset)
-        .get();
-
-      const tasks = snapshot.docs.map(doc => ({
+      console.log(`Searching for term: "${searchTerm}"`);
+      
+      // Si hay término de búsqueda, realizar búsqueda en el cliente
+      // Firebase no permite búsquedas OR ni en múltiples campos a la vez
+      let allTasks: Task[] = [];
+      
+      // Obtener todas las tareas del usuario
+      const snapshot = await query.get();
+      
+      allTasks = snapshot.docs.map(doc => ({
         id: doc.id,
         ...doc.data()
       })) as Task[];
-
+      
+      // Filtrar resultados si hay término de búsqueda
+      let filteredTasks = allTasks;
+      if (searchTerm && searchTerm.trim()) {
+        const term = searchTerm.trim().toLowerCase();
+        console.log('Filtering by search term:', term);
+        
+        filteredTasks = allTasks.filter(task => 
+          task.title.toLowerCase().includes(term) || 
+          (task.description && task.description.toLowerCase().includes(term))
+        );
+      }
+      
+      // Aplicar ordenamiento
+      filteredTasks.sort((a, b) => {
+        if (orderBy === 'createdAt') {
+          // Ordenar por fecha de creación
+          const timeA = a.createdAt instanceof Date ? a.createdAt.getTime() : 
+            (a.createdAt as any)._seconds * 1000;
+          const timeB = b.createdAt instanceof Date ? b.createdAt.getTime() : 
+            (b.createdAt as any)._seconds * 1000;
+          
+          return order === 'desc' ? timeB - timeA : timeA - timeB;
+        }
+        
+        // Ordenamiento por otros campos
+        const valueA = a[orderBy as keyof Task];
+        const valueB = b[orderBy as keyof Task];
+        
+        if (typeof valueA === 'string' && typeof valueB === 'string') {
+          return order === 'desc' 
+            ? valueB.localeCompare(valueA) 
+            : valueA.localeCompare(valueB);
+        }
+        
+        return 0;
+      });
+      
+      // Obtener el total
+      const total = filteredTasks.length;
+      
+      // Aplicar paginación
+      const start = (page - 1) * limit;
+      const end = start + limit;
+      const paginatedTasks = filteredTasks.slice(start, end);
+      
+      console.log(`Found ${total} tasks, returning ${paginatedTasks.length} tasks for page ${page}`);
+      
       return {
-        tasks,
+        tasks: paginatedTasks,
         total
       };
     } catch (error) {

@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable, throwError } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
 import { Task } from '../models/task.model';
@@ -20,15 +20,22 @@ export class TaskService {
     private http: HttpClient
   ) { }
 
-  getTasks(): Observable<Task[]> {
-    return this.http.get<TasksResponse | Task[]>(this.apiUrl)
+  getTasks(searchTerm?: string | null): Observable<Task[]> {
+    let params = new HttpParams();
+    
+    if (searchTerm && searchTerm.trim()) {
+      params = params.set('search', searchTerm.trim());
+      console.log('Searching with term:', searchTerm.trim());
+    }
+    
+    return this.http.get<TasksResponse | Task[]>(this.apiUrl, { params })
       .pipe(
         map(response => {
           if (response && 'tasks' in response && Array.isArray(response.tasks)) {
-            console.log('Response is TasksResponse format:', response);
+            console.log(`Response contains ${response.tasks.length} of ${response.total} total tasks`);
             return response.tasks || [];
           } else if (Array.isArray(response)) {
-            console.log('Response is Task[] format:', response);
+            console.log(`Response is an array with ${response.length} tasks`);
             return response;
           } else {
             console.warn('Unexpected response format:', response);
@@ -40,6 +47,19 @@ export class TaskService {
           return throwError(() => new Error('Error getting tasks'));
         })
       );
+  }
+
+  // Método para buscar localmente las tareas (como alternativa)
+  searchTasks(tasks: Task[], searchTerm: string | null): Task[] {
+    if (!searchTerm || !searchTerm.trim()) {
+      return tasks;
+    }
+    
+    const term = searchTerm.toLowerCase().trim();
+    return tasks.filter(task => 
+      task.title.toLowerCase().includes(term) || 
+      (task.description && task.description.toLowerCase().includes(term))
+    );
   }
 
   createTask(taskData: {title: string, description: string, priority?: 'high' | 'medium' | 'low'}): Observable<Task> {

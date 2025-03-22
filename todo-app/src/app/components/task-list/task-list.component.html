@@ -37,6 +37,23 @@
           Task List
         </h2>
         <div class="section-actions">
+          <div class="search-container">
+            <mat-form-field appearance="outline" class="search-field">
+              <mat-label>Buscar tareas</mat-label>
+              <input matInput [formControl]="searchControl" placeholder="Buscar por título o descripción">
+              <button 
+                *ngIf="searchControl.value" 
+                matSuffix 
+                mat-icon-button 
+                aria-label="Clear" 
+                (click)="clearSearch()"
+                matTooltip="Limpiar búsqueda">
+                <mat-icon>close</mat-icon>
+              </button>
+              <mat-icon matPrefix>search</mat-icon>
+            </mat-form-field>
+          </div>
+          
           <mat-button-toggle-group [value]="sortOption" (change)="changeSortOption($event.source.value)" class="sort-options" aria-label="Sort options">
             <mat-button-toggle value="date" matTooltip="Ordenar por fecha">
               <mat-icon>date_range</mat-icon>
@@ -47,7 +64,7 @@
               <span class="toggle-label">Prioridad</span>
             </mat-button-toggle>
           </mat-button-toggle-group>
-          <button mat-button color="accent" (click)="loadTasks()" class="refresh-button" matTooltip="Reload tasks">
+          <button mat-button color="accent" (click)="loadTasks(searchControl.value)" class="refresh-button" matTooltip="Reload tasks">
             <mat-icon>refresh</mat-icon> Refresh
           </button>
         </div>
@@ -80,12 +97,24 @@
         
         <div *ngIf="(tasks$ | async)?.length === 0" class="empty-state">
           <div class="empty-state-content">
-            <mat-icon class="empty-icon">playlist_add</mat-icon>
-            <h3>You have no pending tasks</h3>
-            <p class="empty-desc">Start organizing your day by creating your first task using the form above.</p>
-            <button mat-raised-button color="primary" (click)="loadTasks()">
-              <mat-icon>add</mat-icon> Create Task
-            </button>
+            <mat-icon class="empty-icon">{{ searchControl.value ? 'search_off' : 'playlist_add' }}</mat-icon>
+            <h3>{{ searchControl.value ? 'No se encontraron tareas para tu búsqueda' : 'No tienes tareas pendientes' }}</h3>
+            <p class="empty-desc">
+              <ng-container *ngIf="searchControl.value; else noTasksMessage">
+                Intenta con otro término de búsqueda o <a href="javascript:void(0)" (click)="clearSearch()">limpia la búsqueda</a>.
+              </ng-container>
+              <ng-template #noTasksMessage>
+                Empieza a organizar tu día creando tu primera tarea en el formulario de arriba.
+              </ng-template>
+            </p>
+            <div class="empty-state-actions">
+              <button *ngIf="searchControl.value" mat-stroked-button color="primary" (click)="clearSearch()">
+                <mat-icon>clear</mat-icon> Limpiar búsqueda
+              </button>
+              <button mat-raised-button color="primary" (click)="loadTasks(searchControl.value)">
+                <mat-icon>refresh</mat-icon> Recargar
+              </button>
+            </div>
           </div>
         </div>
       </ng-container>

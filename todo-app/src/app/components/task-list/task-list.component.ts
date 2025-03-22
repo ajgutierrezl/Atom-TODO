@@ -1,12 +1,13 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Router } from '@angular/router';
-import { Observable, of, tap, catchError } from 'rxjs';
-import { finalize } from 'rxjs/operators';
+import { Observable, of, tap, catchError, Subject } from 'rxjs';
+import { finalize, debounceTime, distinctUntilChanged, takeUntil } from 'rxjs/operators';
 import { Task, FirestoreTimestamp } from '../../models/task.model';
 import { TaskService } from '../../services/task.service';
 import { AuthService } from '../../services/auth.service';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { FormControl } from '@angular/forms';
 import { EditTaskDialogComponent } from './edit-task-dialog/edit-task-dialog.component';
 import { DeleteTaskDialogComponent } from './delete-task-dialog/delete-task-dialog.component';
 
@@ -15,12 +16,14 @@ import { DeleteTaskDialogComponent } from './delete-task-dialog/delete-task-dial
   templateUrl: './task-list.component.html',
   styleUrls: ['./task-list.component.scss']
 })
-export class TaskListComponent implements OnInit {
+export class TaskListComponent implements OnInit, OnDestroy {
   tasks$: Observable<Task[]> = of([]);
   isLoading = true;
   error = false;
   completedTasks: Task[] = [];
   sortOption: 'date' | 'priority' = 'date';
+  searchControl = new FormControl('');
+  private destroy$ = new Subject<void>();
 
   constructor(
     private taskService: TaskService,
@@ -31,16 +34,38 @@ export class TaskListComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
+    this.initSearchListener();
     this.loadTasks();
   }
 
-  loadTasks(): void {
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
+  }
+
+  initSearchListener(): void {
+    this.searchControl.valueChanges
+      .pipe(
+        debounceTime(300),
+        distinctUntilChanged(),
+        takeUntil(this.destroy$)
+      )
+      .subscribe(value => {
+        this.loadTasks(value || '');
+      });
+  }
+
+  loadTasks(searchTerm: string | null | undefined = ''): void {
     this.isLoading = true;
     this.error = false;
 
-    this.tasks$ = this.taskService.getTasks().pipe(
+    // Convertir null o undefined a string vacía
+    const search = searchTerm || '';
+    console.log('Loading tasks with search term:', search);
+
+    this.tasks$ = this.taskService.getTasks(search).pipe(
       tap(tasks => {
-        console.log('Tasks loaded:', tasks);
+        console.log(`Received ${tasks.length} tasks from server`);
         try {
           const sortedTasks = this.sortOption === 'date' 
             ? this.sortTasksByDate(tasks)
@@ -62,6 +87,10 @@ export class TaskListComponent implements OnInit {
         this.isLoading = false;
       })
     );
+  }
+
+  clearSearch(): void {
+    this.searchControl.setValue('');
   }
 
   private sortTasksByDate(tasks: Task[]): Task[] {
