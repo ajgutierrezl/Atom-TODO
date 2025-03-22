@@ -7,31 +7,35 @@ let db: admin.firestore.Firestore;
 
 const initializeFirebase = () => {
   try {
-    if (!process.env.GOOGLE_APPLICATION_CREDENTIALS) {
-      throw new Error('GOOGLE_APPLICATION_CREDENTIALS is required');
+    // Si ya está inicializado, retornar
+    if (admin.apps.length) {
+      console.log('Firebase ya está inicializado');
+      return true;
     }
 
-    const serviceAccount = JSON.parse(process.env.GOOGLE_APPLICATION_CREDENTIALS);
+    if (!process.env.FIREBASE_SERVICE_ACCOUNT) {
+      throw new Error('FIREBASE_SERVICE_ACCOUNT is required');
+    }
 
-    // Inicializar la aplicación de Firebase
-    const app = admin.initializeApp({
+    console.log('Iniciando configuración de Firebase...');
+    const serviceAccount = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT);
+
+    admin.initializeApp({
       credential: admin.credential.cert(serviceAccount)
     });
 
-    // Inicializar Firestore
-    db = app.firestore();
-
-    console.log('Firebase initialized successfully');
+    db = admin.firestore();
+    console.log('Firebase inicializado exitosamente');
     return true;
   } catch (error) {
-    console.error('Error initializing Firebase:', error);
+    console.error('Error al inicializar Firebase:', error);
     throw error;
   }
 };
 
 const getFirestore = () => {
   if (!db) {
-    throw new Error('Firestore has not been initialized. Call initializeFirebase() first.');
+    throw new Error('Firestore no ha sido inicializado. Llama a initializeFirebase() primero.');
   }
   return db;
 };

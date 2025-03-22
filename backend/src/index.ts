@@ -5,19 +5,28 @@ import { initializeFirebase } from './config/firebase';
 import taskRouter from './routes/task.routes';
 import userRouter from './routes/user.routes';
 import * as functions from 'firebase-functions';
+import swaggerUi from 'swagger-ui-express';
+import { swaggerSpec } from './config/swagger';
 
-// Cargar variables de entorno
-dotenv.config();
+// Cargar variables de entorno según el ambiente
+const envFile = process.env.NODE_ENV === 'production' ? '.env.production' : '.env';
+dotenv.config({ path: envFile });
 
 const app = express();
-const port = process.env.SERVER_PORT || 5000;
+const port = process.env.PORT || 5000;
 
-// Configurar middlewares básicos primero
+// Configurar middlewares básicos
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cors({
-  origin: true,
+  origin: process.env.CORS_ORIGIN || true,
   credentials: true
+}));
+
+// Configurar Swagger UI
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec, {
+  customCss: '.swagger-ui .topbar { display: none }',
+  customSiteTitle: 'API de Atom TODO - Documentación',
 }));
 
 // Middleware para logging
@@ -28,75 +37,63 @@ app.use((req, res, next) => {
 
 // Ruta de health check
 app.get('/health', (req, res) => {
-  res.json({ status: 'OK', timestamp: new Date().toISOString() });
+  res.json({ 
+    status: 'OK', 
+    environment: process.env.NODE_ENV,
+    timestamp: new Date().toISOString() 
+  });
 });
 
-// Inicializar Firebase antes de configurar las rutas
+// Inicializar Firebase una sola vez
 let firebaseInitialized = false;
 try {
-  initializeFirebase();
-  firebaseInitialized = true;
-  console.log('Firebase initialized successfully');
+  if (!firebaseInitialized) {
+    initializeFirebase();
+    firebaseInitialized = true;
+    console.log('Firebase inicializado exitosamente en ambiente:', process.env.NODE_ENV);
+  }
 } catch (error) {
-  console.error('Failed to initialize Firebase:', error);
+  console.error('Error al inicializar Firebase:', error);
 }
 
+// Configurar rutas basadas en el estado de Firebase
 if (firebaseInitialized) {
-  // Configurar rutas solo si Firebase está inicializado
   app.use('/auth', userRouter);
   app.use('/tasks', taskRouter);
 } else {
-  // Si Firebase no está inicializado, todas las rutas retornarán error 503
   app.use('/*', (req, res) => {
     res.status(503).json({
-      error: 'Service Unavailable',
-      message: 'Firebase initialization failed'
+      error: 'Servicio no disponible',
+      message: 'Error en la inicialización de Firebase'
     });
   });
 }
 
-// Manejador de rutas no encontradas
+// Manejo de rutas no encontradas
 app.use((req, res) => {
-  res.status(404).json({ 
-    error: 'Not Found',
-    message: `Route ${req.method} ${req.path} not found`
+  res.status(404).json({
+    error: 'No encontrado',
+    message: 'La ruta solicitada no existe'
   });
 });
 
-// Manejador de errores global
-app.use((err: any, req: express.Request, res: express.Response, _next: express.NextFunction) => {
+// Manejo global de errores
+app.use((err: any, req: express.Request, res: express.Response, next: express.NextFunction) => {
   console.error('Error:', err);
-  res.status(err.status || 500).json({ 
-    error: err.name || 'Internal Server Error',
-    message: err.message || 'An unexpected error occurred',
-    path: req.path
+  res.status(err.status || 500).json({
+    error: 'Error interno del servidor',
+    message: process.env.NODE_ENV === 'development' ? err.message : 'Ocurrió un error inesperado'
   });
 });
 
 // Exportar la función para Firebase Functions
 export const api = functions.https.onRequest(app);
 
-// Solo iniciar el servidor si no estamos en entorno de Firebase Functions
-if (process.env.NODE_ENV !== 'production') {
-  const server = app.listen(port, () => {
-    console.log(`Servidor corriendo en http://localhost:${port}`);
+// Iniciar el servidor local si no estamos en Firebase Functions
+if (!process.env.FUNCTION_TARGET) {
+  app.listen(port, () => {
+    console.log(`Servidor iniciado en el puerto ${port} en modo ${process.env.NODE_ENV}`);
     console.log(`Estado de Firebase: ${firebaseInitialized ? 'Inicializado' : 'No inicializado'}`);
-  });
-
-  // Manejar señales de terminación
-  process.on('SIGTERM', () => {
-    console.log('SIGTERM recibido. Cerrando servidor...');
-    server.close(() => {
-      console.log('Servidor cerrado.');
-      process.exit(0);
-    });
-  });
-
-  process.on('SIGINT', () => {
-    console.log('SIGINT recibido. Cerrando servidor...');
-    server.close(() => {
-      console.log('Servidor cerrado.');
-      process.exit(0);
-    });
+    console.log(`Documentación disponible en: http://localhost:${port}/api-docs`);
   });
 } 
