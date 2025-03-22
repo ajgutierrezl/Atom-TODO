@@ -13,14 +13,16 @@ const envFile = process.env.NODE_ENV === 'production' ? '.env.production' : '.en
 dotenv.config({ path: envFile });
 
 const app = express();
-const port = process.env.PORT || 5000;
+const port = process.env.SERVER_PORT || 5000;
 
 // Configurar middlewares básicos
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cors({
-  origin: process.env.CORS_ORIGIN || true,
-  credentials: true
+  origin: '*',
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Origin', 'X-Requested-With', 'Content-Type', 'Accept', 'Authorization'],
 }));
 
 // Configurar Swagger UI
@@ -89,8 +91,8 @@ app.use((err: any, req: express.Request, res: express.Response, next: express.Ne
 // Exportar la función para Firebase Functions
 export const api = functions.https.onRequest(app);
 
-// Iniciar el servidor local si no estamos en Firebase Functions
-if (!process.env.FUNCTION_TARGET) {
+// Iniciar el servidor local si no estamos en Firebase Functions ni en despliegue
+if (!process.env.FUNCTION_TARGET && !process.env.FIREBASE_CONFIG) {
   app.listen(port, () => {
     console.log(`Servidor iniciado en el puerto ${port} en modo ${process.env.NODE_ENV}`);
     console.log(`Estado de Firebase: ${firebaseInitialized ? 'Inicializado' : 'No inicializado'}`);

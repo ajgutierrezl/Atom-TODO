@@ -13,12 +13,12 @@ const initializeFirebase = () => {
       return true;
     }
 
-    if (!process.env.FIREBASE_SERVICE_ACCOUNT) {
-      throw new Error('FIREBASE_SERVICE_ACCOUNT is required');
+    if (!process.env.ATOM_FIREBASE_SERVICE_ACCOUNT) {
+      throw new Error('ATOM_FIREBASE_SERVICE_ACCOUNT is required');
     }
 
     console.log('Iniciando configuración de Firebase...');
-    const serviceAccount = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT);
+    const serviceAccount = JSON.parse(process.env.ATOM_FIREBASE_SERVICE_ACCOUNT);
 
     admin.initializeApp({
       credential: admin.credential.cert(serviceAccount)

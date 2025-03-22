@@ -76,6 +76,7 @@ describe('TaskController', () => {
           description: 'Description 1',
           completed: false,
           userId: mockUserId,
+          priority: 'medium',
           createdAt: new Date(),
           updatedAt: new Date()
         }
@@ -138,6 +139,7 @@ describe('TaskController', () => {
         description: 'Description',
         completed: false,
         userId: mockUserId,
+        priority: 'low',
         createdAt: new Date(),
         updatedAt: new Date()
       };
@@ -193,6 +195,7 @@ describe('TaskController', () => {
         id: mockTaskId,
         ...taskWithUserId,
         completed: false,
+        priority: 'high',
         createdAt: new Date(),
         updatedAt: new Date()
       };
@@ -260,6 +263,7 @@ describe('TaskController', () => {
         description: 'Original Description',
         completed: true,
         userId: mockUserId,
+        priority: 'medium',
         createdAt: new Date(),
         updatedAt: new Date()
       };

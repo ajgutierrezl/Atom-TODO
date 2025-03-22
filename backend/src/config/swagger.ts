@@ -12,7 +12,7 @@ const options = {
       {
         url: process.env.NODE_ENV === 'production' 
           ? 'https://atom-c184a.web.app/api' 
-          : `http://localhost:${process.env.PORT || 5000}`,
+          : `http://localhost:${process.env.SERVER_PORT || 5000}`,
         description: process.env.NODE_ENV === 'production' ? 'Servidor de producción' : 'Servidor de desarrollo',
       },
     ],
