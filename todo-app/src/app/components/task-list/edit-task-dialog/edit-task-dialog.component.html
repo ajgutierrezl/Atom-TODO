@@ -36,9 +36,9 @@
           <mat-select-trigger>
             <div class="priority-option">
               <mat-icon [ngClass]="'priority-' + editForm.get('priority')?.value">
-                {{ getPriorityInfo(editForm.get('priority')?.value)?.icon }}
+                {{ getPriorityInfo(editForm.get('priority')?.value).icon }}
               </mat-icon>
-              <span>{{ getPriorityInfo(editForm.get('priority')?.value)?.label }}</span>
+              <span>{{ getPriorityInfo(editForm.get('priority')?.value).label }}</span>
             </div>
           </mat-select-trigger>
           <mat-option *ngFor="let option of priorityOptions" [value]="option.value">
