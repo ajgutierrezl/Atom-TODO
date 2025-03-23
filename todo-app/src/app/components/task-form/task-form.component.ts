@@ -33,39 +33,37 @@ export class TaskFormComponent {
     });
   }
 
+  getPriorityInfo(value: string) {
+    return this.priorityOptions.find(option => option.value === value) || this.priorityOptions[1];
+  }
+
   onSubmit(): void {
     if (this.taskForm.invalid) {
       return;
     }
 
     this.isLoading = true;
-    const { title, description, priority } = this.taskForm.value;
+    const formData = this.taskForm.value;
 
-    console.log('Creating task with priority:', priority);
-
-    this.taskService.createTask({ 
-      title, 
-      description,
-      priority
-    }).subscribe({
+    this.taskService.createTask(formData).subscribe({
       next: () => {
         this.isLoading = false;
         this.taskForm.reset({
           priority: 'medium'
         });
-        this.snackBar.open('Task created successfully', 'Close', { 
+        this.snackBar.open('Tarea creada exitosamente', 'Cerrar', { 
           duration: 3000,
           panelClass: 'success-snackbar'
         });
         this.taskCreated.emit();
       },
       error: (error) => {
+        console.error('Error al crear la tarea:', error);
         this.isLoading = false;
-        this.snackBar.open('Error creating task', 'Close', { 
+        this.snackBar.open('Error al crear la tarea', 'Cerrar', { 
           duration: 3000,
           panelClass: 'error-snackbar'
         });
-        console.error('Error creating task:', error);
       }
     });
   }
@@ -74,11 +72,5 @@ export class TaskFormComponent {
     if (this.titleInput) {
       this.titleInput.nativeElement.focus();
     }
-  }
-  
-  // Método para obtener la etiqueta de la prioridad seleccionada
-  getPriorityInfo(value: string | null) {
-    if (!value) return this.priorityOptions.find(opt => opt.value === 'medium');
-    return this.priorityOptions.find(opt => opt.value === value) || this.priorityOptions[1]; // Default: medium
   }
 }

@@ -31,24 +31,24 @@ export class EditTaskDialogComponent implements OnInit {
   }
   
   ngOnInit(): void {
-    console.log('Editing task:', this.data.task);
-    
-    // Inicializar el formulario con los datos actuales de la tarea
     this.editForm.patchValue({
-      title: this.data.task.title || '',
-      description: this.data.task.description || '',
-      completed: this.data.task.completed || false,
+      title: this.data.task.title,
+      description: this.data.task.description,
+      completed: this.data.task.completed,
       priority: this.data.task.priority || 'medium'
     });
   }
+
+  getPriorityInfo(value: string) {
+    return this.priorityOptions.find(option => option.value === value) || this.priorityOptions[1];
+  }
   
   onSubmit(): void {
-    if (this.editForm.invalid) {
-      return;
-    }
+    if (this.editForm.invalid) return;
     
-    // Solo envía los datos editados
-    const updatedTask: Partial<Task> = {
+    this.isLoading = true;
+    const updatedTask = {
+      ...this.data.task,
       ...this.editForm.value
     };
     
@@ -57,11 +57,5 @@ export class EditTaskDialogComponent implements OnInit {
   
   onCancel(): void {
     this.dialogRef.close();
-  }
-  
-  // Método para obtener la etiqueta de la prioridad seleccionada
-  getPriorityInfo(value: string | null) {
-    if (!value) return this.priorityOptions.find(opt => opt.value === 'medium');
-    return this.priorityOptions.find(opt => opt.value === value) || this.priorityOptions[1]; // Default: medium
   }
 } 

@@ -150,3 +150,59 @@ html, body {
     }
   }
 }
+
+// Mejoras para los selectores de Material
+.mat-mdc-select-panel {
+  min-width: 200px !important;
+}
+
+.mat-mdc-select-trigger {
+  height: auto !important;
+}
+
+.mat-mdc-select-value {
+  display: inline-flex !important;
+  align-items: center !important;
+}
+
+.priority-option {
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 8px !important;
+  padding: 8px 0 !important;
+  
+  mat-icon {
+    font-size: 18px !important;
+    width: 18px !important;
+    height: 18px !important;
+    margin: 0 !important;
+  }
+
+  span {
+    font-size: 14px !important;
+    line-height: 1 !important;
+  }
+}
+
+.mat-mdc-option {
+  min-height: 48px !important;
+  
+  .mdc-list-item__primary-text {
+    display: flex !important;
+    align-items: center !important;
+    width: 100% !important;
+  }
+}
+
+// Colores de prioridad
+.priority-high {
+  color: #f44336 !important;
+}
+
+.priority-medium {
+  color: #ff9800 !important;
+}
+
+.priority-low {
+  color: #4caf50 !important;
+}

@@ -31,15 +31,16 @@
       </mat-form-field>
 
       <mat-form-field appearance="outline" class="form-field">
-        <mat-label>
-          <span class="priority-label">
-            <mat-icon [ngClass]="'priority-' + editForm.get('priority')?.value">
-              {{ getPriorityInfo(editForm.get('priority')?.value)?.icon }}
-            </mat-icon>
-            Prioridad: {{ getPriorityInfo(editForm.get('priority')?.value)?.label }}
-          </span>
-        </mat-label>
-        <mat-select formControlName="priority" matTooltip="Selecciona la prioridad de la tarea">
+        <mat-label>Prioridad</mat-label>
+        <mat-select formControlName="priority">
+          <mat-select-trigger>
+            <div class="priority-option">
+              <mat-icon [ngClass]="'priority-' + editForm.get('priority')?.value">
+                {{ getPriorityInfo(editForm.get('priority')?.value)?.icon }}
+              </mat-icon>
+              <span>{{ getPriorityInfo(editForm.get('priority')?.value)?.label }}</span>
+            </div>
+          </mat-select-trigger>
           <mat-option *ngFor="let option of priorityOptions" [value]="option.value">
             <div class="priority-option">
               <mat-icon [ngClass]="'priority-' + option.value">{{ option.icon }}</mat-icon>

@@ -23,6 +23,7 @@ export class TaskListComponent implements OnInit, OnDestroy {
   completedTasks: Task[] = [];
   sortOption: 'date' | 'priority' = 'date';
   searchControl = new FormControl('');
+  currentUser: any = null;
   private destroy$ = new Subject<void>();
 
   constructor(
@@ -36,6 +37,14 @@ export class TaskListComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.initSearchListener();
     this.loadTasks();
+    // Obtener el usuario actual
+    this.currentUser = this.authService.getCurrentUser();
+    // Suscribirse a cambios en el estado del usuario
+    this.authService.currentUser$.pipe(
+      takeUntil(this.destroy$)
+    ).subscribe(user => {
+      this.currentUser = user;
+    });
   }
 
   ngOnDestroy(): void {
