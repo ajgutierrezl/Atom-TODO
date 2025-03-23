@@ -5,11 +5,6 @@ import { catchError, map } from 'rxjs/operators';
 import { Task } from '../models/task.model';
 import { environment } from '../../environments/environment';
 
-interface TasksResponse {
-  tasks: Task[];
-  total: number;
-}
-
 @Injectable({
   providedIn: 'root'
 })
@@ -20,33 +15,16 @@ export class TaskService {
     private http: HttpClient
   ) { }
 
-  getTasks(searchTerm?: string | null): Observable<Task[]> {
-    let params = new HttpParams();
+  getTasks(page: number = 0, limit: number = 10, search?: string): Observable<{items: Task[], total: number}> {
+    let params = new HttpParams()
+      .set('page', page.toString())
+      .set('limit', limit.toString());
     
-    if (searchTerm && searchTerm.trim()) {
-      params = params.set('search', searchTerm.trim());
-      console.log('Searching with term:', searchTerm.trim());
+    if (search && search.trim()) {
+      params = params.set('search', search.trim());
     }
-    
-    return this.http.get<TasksResponse | Task[]>(this.apiUrl, { params })
-      .pipe(
-        map(response => {
-          if (response && 'tasks' in response && Array.isArray(response.tasks)) {
-            console.log(`Response contains ${response.tasks.length} of ${response.total} total tasks`);
-            return response.tasks || [];
-          } else if (Array.isArray(response)) {
-            console.log(`Response is an array with ${response.length} tasks`);
-            return response;
-          } else {
-            console.warn('Unexpected response format:', response);
-            return [];
-          }
-        }),
-        catchError(error => {
-          console.error('Error fetching tasks:', error);
-          return throwError(() => new Error('Error getting tasks'));
-        })
-      );
+
+    return this.http.get<{items: Task[], total: number}>(this.apiUrl, { params });
   }
 
   // Método para buscar localmente las tareas (como alternativa)

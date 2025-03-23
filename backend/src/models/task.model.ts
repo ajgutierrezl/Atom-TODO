@@ -2,17 +2,18 @@ export interface TaskDTO {
   title: string;
   description?: string;
   completed?: boolean;
-  priority?: 'high' | 'medium' | 'low';
+  priority?: 'low' | 'medium' | 'high';
+  dueDate?: Date;
+  userId: string;
 }
 
 export interface Task extends TaskDTO {
   id: string;
-  userId: string;
   createdAt: Date;
   updatedAt: Date;
-  completed: boolean;
-  priority: 'high' | 'medium' | 'low';
 }
+
+// No necesitamos el Schema de Mongoose ya que usamos Firebase
 
 export interface CreateTaskDTO {
   title: string;

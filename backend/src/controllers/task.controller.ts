@@ -2,6 +2,8 @@ import { Response } from 'express';
 import { TaskService } from '../services/task.service';
 import { AuthRequest } from '../middleware/auth.middleware';
 import { TaskDTO } from '../models/task.model';
+import { Request } from 'express';
+import { Task } from '../models/task.model';
 
 export class TaskController {
   private taskService: TaskService;
@@ -13,34 +15,24 @@ export class TaskController {
   getTasks = async (req: AuthRequest, res: Response): Promise<void> => {
     try {
       const userId = req.user?.sub;
-      
       if (!userId) {
         res.status(401).json({ error: 'Usuario no autorizado' });
         return;
       }
 
-      // Parámetros de búsqueda y paginación
-      const searchTerm = req.query.search as string || undefined;
-      const page = parseInt(req.query.page as string) || 1;
+      const page = parseInt(req.query.page as string) || 0;
       const limit = parseInt(req.query.limit as string) || 10;
-      const orderBy = (req.query.orderBy as string) || 'createdAt';
-      const order = (req.query.order as 'asc' | 'desc') || 'desc';
+      const search = (req.query.search as string) || '';
 
-      console.log('Search params:', { searchTerm, page, limit, orderBy, order });
+      const result = await this.taskService.findAll(userId, page, limit, search);
 
-      const tasks = await this.taskService.findAll(
-        userId,
-        page,
-        limit,
-        orderBy,
-        order,
-        searchTerm
-      );
-      
-      res.status(200).json(tasks);
+      res.status(200).json(result);
     } catch (error) {
-      console.error('Error al obtener tareas:', error);
-      res.status(500).json({ error: 'Error interno del servidor' });
+      console.error('Error getting tasks:', error);
+      res.status(500).json({
+        message: 'Error getting tasks',
+        error: error instanceof Error ? error.message : 'Unknown error'
+      });
     }
   };
 

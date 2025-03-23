@@ -3,6 +3,7 @@ import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { HttpClientModule } from '@angular/common/http';
 import { ReactiveFormsModule, FormsModule } from '@angular/forms';
+import { MatPaginatorModule } from '@angular/material/paginator';
 
 // Módulos
 import { AppRoutingModule } from './app-routing.module';
@@ -38,7 +39,8 @@ import { httpInterceptorProviders } from './interceptors';
     ReactiveFormsModule,
     FormsModule,
     AppRoutingModule,
-    MaterialModule
+    MaterialModule,
+    MatPaginatorModule
   ],
   providers: [
     httpInterceptorProviders

@@ -22,11 +22,11 @@
       <h1 class="page-title">My Tasks</h1>
       <div class="task-stats">
         <div class="stat-item" matTooltip="Total number of tasks">
-          <span class="stat-value">{{(tasks$ | async)?.length || 0}}</span>
+          <span class="stat-value">{{totalTasks}}</span>
           <span class="stat-label">Total</span>
         </div>
         <div class="stat-item" matTooltip="Completed tasks">
-          <span class="stat-value">{{getCompletedCount() || 0}}</span>
+          <span class="stat-value">{{completedTasks.length}}</span>
           <span class="stat-label">Done</span>
         </div>
       </div>
@@ -44,17 +44,8 @@
           <div class="search-container">
             <mat-form-field appearance="outline" class="search-field">
               <mat-label>Buscar tareas</mat-label>
-              <input matInput [formControl]="searchControl" placeholder="Buscar por título o descripción">
-              <button 
-                *ngIf="searchControl.value" 
-                matSuffix 
-                mat-icon-button 
-                aria-label="Clear" 
-                (click)="clearSearch()"
-                matTooltip="Limpiar búsqueda">
-                <mat-icon>close</mat-icon>
-              </button>
-              <mat-icon matPrefix>search</mat-icon>
+              <input matInput [formControl]="searchControl" placeholder="Buscar...">
+              <mat-icon matSuffix>search</mat-icon>
             </mat-form-field>
           </div>
           
@@ -68,7 +59,7 @@
               <span class="toggle-label">Prioridad</span>
             </mat-button-toggle>
           </mat-button-toggle-group>
-          <button mat-button color="accent" (click)="loadTasks(searchControl.value)" class="refresh-button" matTooltip="Reload tasks">
+          <button mat-button color="accent" (click)="loadTasks(searchControl.value || '')" class="refresh-button" matTooltip="Reload tasks">
             <mat-icon>refresh</mat-icon> Refresh
           </button>
         </div>
@@ -82,14 +73,16 @@
       <div *ngIf="error" class="error-message">
         <mat-icon color="warn">error_outline</mat-icon>
         <p>An error occurred while loading tasks.</p>
-        <button mat-raised-button color="primary" (click)="loadTasks()">
+        <button mat-raised-button color="primary" (click)="loadTasks(searchControl.value || '')">
           <mat-icon>refresh</mat-icon> Retry
         </button>
       </div>
 
       <ng-container *ngIf="!isLoading && !error">
         <div class="tasks-grid">
-          <mat-card *ngFor="let task of tasks$ | async; trackBy: trackById" class="task-card" [class.completed-task]="task.completed">
+          <mat-card *ngFor="let task of tasks$ | async; trackBy: trackById" 
+                    class="task-card" 
+                    [class.completed-task]="task.completed">
             <app-task-item
               [task]="task"
               (taskToggled)="onTaskToggle(task)"
@@ -115,12 +108,21 @@
               <button *ngIf="searchControl.value" mat-stroked-button color="primary" (click)="clearSearch()">
                 <mat-icon>clear</mat-icon> Limpiar búsqueda
               </button>
-              <button mat-raised-button color="primary" (click)="loadTasks(searchControl.value)">
+              <button mat-raised-button color="primary" (click)="loadTasks(searchControl.value || '')">
                 <mat-icon>refresh</mat-icon> Recargar
               </button>
             </div>
           </div>
         </div>
+
+        <mat-paginator
+          [length]="totalTasks"
+          [pageSize]="pageSize"
+          [pageSizeOptions]="pageSizeOptions"
+          [pageIndex]="currentPage"
+          (page)="onPageChange($event)"
+          aria-label="Seleccionar página">
+        </mat-paginator>
       </ng-container>
     </div>
   </div>

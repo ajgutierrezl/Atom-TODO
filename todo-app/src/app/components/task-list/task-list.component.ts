@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewChild } from '@angular/core';
 import { Router } from '@angular/router';
 import { Observable, of, tap, catchError, Subject } from 'rxjs';
 import { finalize, debounceTime, distinctUntilChanged, takeUntil } from 'rxjs/operators';
@@ -11,6 +11,7 @@ import { FormControl } from '@angular/forms';
 import { EditTaskDialogComponent } from './edit-task-dialog/edit-task-dialog.component';
 import { DeleteTaskDialogComponent } from './delete-task-dialog/delete-task-dialog.component';
 import { User } from '../../models/user.model';
+import { MatPaginator, PageEvent } from '@angular/material/paginator';
 
 @Component({
   selector: 'app-task-list',
@@ -18,14 +19,22 @@ import { User } from '../../models/user.model';
   styleUrls: ['./task-list.component.scss']
 })
 export class TaskListComponent implements OnInit, OnDestroy {
-  tasks$: Observable<Task[]> = of([]);
+  @ViewChild(MatPaginator) paginator!: MatPaginator;
+  
+  tasks: Task[] = [];
+  tasks$!: Observable<Task[]>;
   isLoading = true;
   error = false;
   completedTasks: Task[] = [];
   sortOption: 'date' | 'priority' = 'date';
   searchControl = new FormControl('');
   currentUser: User | null = null;
+  totalTasks: number = 0;
+  pageSize: number = 10;
+  pageSizeOptions: number[] = [5, 10, 25, 50];
+  currentPage: number = 0;
   private destroy$ = new Subject<void>();
+  searchTerm: string = '';
 
   constructor(
     private taskService: TaskService,
@@ -50,50 +59,49 @@ export class TaskListComponent implements OnInit, OnDestroy {
     this.destroy$.complete();
   }
 
-  initSearchListener(): void {
-    this.searchControl.valueChanges
-      .pipe(
-        debounceTime(300),
-        distinctUntilChanged(),
-        takeUntil(this.destroy$)
-      )
-      .subscribe(value => {
-        this.loadTasks(value || '');
-      });
+  private initSearchListener(): void {
+    this.searchControl.valueChanges.pipe(
+      debounceTime(300),
+      distinctUntilChanged(),
+      takeUntil(this.destroy$)
+    ).subscribe(searchTerm => {
+      this.onSearch(searchTerm || '');
+    });
   }
 
-  loadTasks(searchTerm: string | null | undefined = ''): void {
+  loadTasks(searchTerm?: string): void {
     this.isLoading = true;
     this.error = false;
 
-    // Convertir null o undefined a string vacía
-    const search = searchTerm || '';
-    console.log('Loading tasks with search term:', search);
+    const search = searchTerm?.trim() || '';
 
-    this.tasks$ = this.taskService.getTasks(search).pipe(
-      tap(tasks => {
-        console.log(`Received ${tasks.length} tasks from server`);
-        try {
-          const sortedTasks = this.sortOption === 'date' 
-            ? this.sortTasksByDate(tasks)
-            : this.sortTasksByPriority(tasks);
-          this.completedTasks = sortedTasks.filter(task => task.completed);
-        } catch (err) {
-          console.error('Error sorting tasks:', err);
-          // Si hay error en el ordenamiento, al menos mostramos las tareas
-          this.completedTasks = tasks.filter(task => task.completed);
-        }
-      }),
-      catchError(error => {
-        console.error('Error loading tasks:', error);
-        this.error = true;
-        this.isLoading = false;
-        return of([]);
-      }),
-      finalize(() => {
-        this.isLoading = false;
-      })
-    );
+    this.taskService.getTasks(this.currentPage, this.pageSize, search)
+      .pipe(
+        takeUntil(this.destroy$),
+        tap(response => {
+          this.tasks = response.items;
+          this.totalTasks = response.total;
+          this.tasks$ = of(this.sortTasks(this.tasks));
+          this.completedTasks = this.tasks.filter(task => task.completed);
+        }),
+        catchError(error => {
+          console.error('Error loading tasks:', error);
+          this.error = true;
+          this.tasks = [];
+          this.tasks$ = of([]);
+          return of({ items: [], total: 0 });
+        }),
+        finalize(() => {
+          this.isLoading = false;
+        })
+      )
+      .subscribe();
+  }
+
+  private sortTasks(tasks: Task[]): Task[] {
+    return this.sortOption === 'date' 
+      ? this.sortTasksByDate(tasks)
+      : this.sortTasksByPriority(tasks);
   }
 
   clearSearch(): void {
@@ -262,5 +270,20 @@ export class TaskListComponent implements OnInit, OnDestroy {
 
   trackById(index: number, task: Task): string {
     return task.id || '';
+  }
+
+  onPageChange(event: PageEvent): void {
+    this.currentPage = event.pageIndex;
+    this.pageSize = event.pageSize;
+    this.loadTasks();
+  }
+
+  onSearch(term: string | null): void {
+    this.searchTerm = term || '';
+    this.currentPage = 0;
+    if (this.paginator) {
+      this.paginator.firstPage();
+    }
+    this.loadTasks(this.searchTerm);
   }
 }
