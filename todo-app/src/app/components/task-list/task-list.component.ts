@@ -10,6 +10,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { FormControl } from '@angular/forms';
 import { EditTaskDialogComponent } from './edit-task-dialog/edit-task-dialog.component';
 import { DeleteTaskDialogComponent } from './delete-task-dialog/delete-task-dialog.component';
+import { User } from '../../models/user.model';
 
 @Component({
   selector: 'app-task-list',
@@ -23,7 +24,7 @@ export class TaskListComponent implements OnInit, OnDestroy {
   completedTasks: Task[] = [];
   sortOption: 'date' | 'priority' = 'date';
   searchControl = new FormControl('');
-  currentUser: any = null;
+  currentUser: User | null = null;
   private destroy$ = new Subject<void>();
 
   constructor(
@@ -37,12 +38,9 @@ export class TaskListComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.initSearchListener();
     this.loadTasks();
-    // Obtener el usuario actual
     this.currentUser = this.authService.getCurrentUser();
-    // Suscribirse a cambios en el estado del usuario
-    this.authService.currentUser$.pipe(
-      takeUntil(this.destroy$)
-    ).subscribe(user => {
+    
+    this.authService.currentUser$.subscribe((user: User | null) => {
       this.currentUser = user;
     });
   }

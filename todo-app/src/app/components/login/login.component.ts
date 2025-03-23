@@ -127,6 +127,20 @@ export class LoginComponent implements OnInit {
       }
     });
   }
+
+  onRegister(email: string): void {
+    if (email) {
+      this.authService.register(email).subscribe({
+        next: () => {
+          this.router.navigate(['/tasks']);
+        },
+        error: (error: any) => {
+          console.error('Error en registro:', error);
+          // Manejar el error apropiadamente
+        }
+      });
+    }
+  }
 }
 
 @Component({

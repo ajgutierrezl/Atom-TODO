@@ -1,7 +1,7 @@
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
+import { HttpClientModule } from '@angular/common/http';
 import { ReactiveFormsModule, FormsModule } from '@angular/forms';
 
 // Módulos
@@ -18,7 +18,7 @@ import { EditTaskDialogComponent } from './components/task-list/edit-task-dialog
 import { DeleteTaskDialogComponent } from './components/task-list/delete-task-dialog/delete-task-dialog.component';
 
 // Interceptores
-import { AuthInterceptor } from './interceptors/auth.interceptor';
+import { httpInterceptorProviders } from './interceptors';
 
 @NgModule({
   declarations: [
@@ -41,11 +41,7 @@ import { AuthInterceptor } from './interceptors/auth.interceptor';
     MaterialModule
   ],
   providers: [
-    {
-      provide: HTTP_INTERCEPTORS,
-      useClass: AuthInterceptor,
-      multi: true
-    }
+    httpInterceptorProviders
   ],
   bootstrap: [AppComponent]
 })
