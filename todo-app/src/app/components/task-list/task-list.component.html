@@ -43,20 +43,20 @@
         <div class="section-actions">
           <div class="search-container">
             <mat-form-field appearance="outline" class="search-field">
-              <mat-label>Buscar tareas</mat-label>
-              <input matInput [formControl]="searchControl" placeholder="Buscar...">
+              <mat-label>Search tasks</mat-label>
+              <input matInput [formControl]="searchControl" placeholder="Search...">
               <mat-icon matSuffix>search</mat-icon>
             </mat-form-field>
           </div>
           
           <mat-button-toggle-group [value]="sortOption" (change)="changeSortOption($event.source.value)" class="sort-options" aria-label="Sort options">
-            <mat-button-toggle value="date" matTooltip="Ordenar por fecha">
+            <mat-button-toggle value="date" matTooltip="Sort by date">
               <mat-icon>date_range</mat-icon>
-              <span class="toggle-label">Fecha</span>
+              <span class="toggle-label">Date</span>
             </mat-button-toggle>
-            <mat-button-toggle value="priority" matTooltip="Ordenar por prioridad">
+            <mat-button-toggle value="priority" matTooltip="Sort by priority">
               <mat-icon>priority_high</mat-icon>
-              <span class="toggle-label">Prioridad</span>
+              <span class="toggle-label">Priority</span>
             </mat-button-toggle>
           </mat-button-toggle-group>
           <button mat-button color="accent" (click)="loadTasks(searchControl.value || '')" class="refresh-button" matTooltip="Reload tasks">
@@ -95,21 +95,21 @@
         <div *ngIf="(tasks$ | async)?.length === 0" class="empty-state">
           <div class="empty-state-content">
             <mat-icon class="empty-icon">{{ searchControl.value ? 'search_off' : 'playlist_add' }}</mat-icon>
-            <h3>{{ searchControl.value ? 'No se encontraron tareas para tu búsqueda' : 'No tienes tareas pendientes' }}</h3>
+            <h3>{{ searchControl.value ? 'No tasks found for your search' : 'You have no pending tasks' }}</h3>
             <p class="empty-desc">
               <ng-container *ngIf="searchControl.value; else noTasksMessage">
-                Intenta con otro término de búsqueda o <a href="javascript:void(0)" (click)="clearSearch()">limpia la búsqueda</a>.
+                Try with another search term or <a href="javascript:void(0)" (click)="clearSearch()">clear the search</a>.
               </ng-container>
               <ng-template #noTasksMessage>
-                Empieza a organizar tu día creando tu primera tarea en el formulario de arriba.
+                Start organizing your day by creating your first task in the form above.
               </ng-template>
             </p>
             <div class="empty-state-actions">
               <button *ngIf="searchControl.value" mat-stroked-button color="primary" (click)="clearSearch()">
-                <mat-icon>clear</mat-icon> Limpiar búsqueda
+                <mat-icon>clear</mat-icon> Clear search
               </button>
               <button mat-raised-button color="primary" (click)="loadTasks(searchControl.value || '')">
-                <mat-icon>refresh</mat-icon> Recargar
+                <mat-icon>refresh</mat-icon> Reload
               </button>
             </div>
           </div>
@@ -121,13 +121,13 @@
           [pageSizeOptions]="pageSizeOptions"
           [pageIndex]="currentPage"
           (page)="onPageChange($event)"
-          aria-label="Seleccionar página">
+          aria-label="Select page">
         </mat-paginator>
       </ng-container>
     </div>
   </div>
 
   <footer class="app-footer">
-    <p>Desarrollado por Aaron Jaffet Gutierrez Lopez</p>
+    <p>Developed by Aaron Jaffet Gutierrez Lopez</p>
   </footer>
 </div>

@@ -135,8 +135,8 @@ export class LoginComponent implements OnInit {
           this.router.navigate(['/tasks']);
         },
         error: (error: any) => {
-          console.error('Error en registro:', error);
-          // Manejar el error apropiadamente
+          console.error('Registration error:', error);
+          // Handle the error appropriately
         }
       });
     }

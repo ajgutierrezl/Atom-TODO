@@ -1,13 +1,13 @@
 import dotenv from 'dotenv';
 
-// Cargar variables de entorno para las pruebas
+// Load environment variables for tests
 dotenv.config();
 
-// Configurar variables de entorno mock para pruebas
+// Configure mock environment variables for tests
 process.env.JWT_SECRET = 'test_jwt_secret';
 process.env.JWT_EXPIRES_IN = '1h';
 
-// Mockear console.error para evitar ruido en los tests
+// Mock console.error to avoid noise in tests
 const originalConsoleError = console.error;
 console.error = jest.fn((...args) => {
   if (process.env.DEBUG === 'true') {

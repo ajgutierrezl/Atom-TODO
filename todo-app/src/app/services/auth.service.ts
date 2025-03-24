@@ -44,7 +44,7 @@ export class AuthService {
         }
       }),
       catchError(error => {
-        console.error('Error en login:', error);
+        console.error('Login error:', error);
         return throwError(() => error);
       })
     );
@@ -81,7 +81,7 @@ export class AuthService {
         }
       }),
       catchError(error => {
-        console.error('Error en registro:', error);
+        console.error('Registration error:', error);
         return throwError(() => error);
       })
     );

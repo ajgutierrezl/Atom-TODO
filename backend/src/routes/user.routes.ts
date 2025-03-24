@@ -14,23 +14,23 @@ const userController = new UserController();
  *       properties:
  *         id:
  *           type: string
- *           description: ID único del usuario
+ *           description: Unique ID of the user
  *         email:
  *           type: string
  *           format: email
- *           description: Correo electrónico del usuario
+ *           description: User's email address
  *         createdAt:
  *           type: string
  *           format: date-time
- *           description: Fecha de creación del usuario
+ *           description: User creation date
  */
 
 /**
  * @swagger
  * /auth/register:
  *   post:
- *     summary: Registrar un nuevo usuario
- *     tags: [Autenticación]
+ *     summary: Register a new user
+ *     tags: [Authentication]
  *     requestBody:
  *       required: true
  *       content:
@@ -44,14 +44,14 @@ const userController = new UserController();
  *               email:
  *                 type: string
  *                 format: email
- *                 description: Correo electrónico del usuario
+ *                 description: User's email address
  *               password:
  *                 type: string
  *                 format: password
- *                 description: Contraseña del usuario (mínimo 6 caracteres)
+ *                 description: User's password (minimum 6 characters)
  *     responses:
  *       201:
- *         description: Usuario registrado exitosamente
+ *         description: User successfully registered
  *         content:
  *           application/json:
  *             schema:
@@ -59,11 +59,11 @@ const userController = new UserController();
  *               properties:
  *                 token:
  *                   type: string
- *                   description: Token JWT para autenticación
+ *                   description: JWT token for authentication
  *       400:
- *         description: Datos inválidos
+ *         description: Invalid data
  *       409:
- *         description: El usuario ya existe
+ *         description: User already exists
  */
 userRouter.post('/register', userController.create);
 
@@ -71,8 +71,8 @@ userRouter.post('/register', userController.create);
  * @swagger
  * /auth/login:
  *   post:
- *     summary: Iniciar sesión
- *     tags: [Autenticación]
+ *     summary: Log in
+ *     tags: [Authentication]
  *     requestBody:
  *       required: true
  *       content:
@@ -86,14 +86,14 @@ userRouter.post('/register', userController.create);
  *               email:
  *                 type: string
  *                 format: email
- *                 description: Correo electrónico del usuario
+ *                 description: User's email address
  *               password:
  *                 type: string
  *                 format: password
- *                 description: Contraseña del usuario
+ *                 description: User's password
  *     responses:
  *       200:
- *         description: Inicio de sesión exitoso
+ *         description: Login successful
  *         content:
  *           application/json:
  *             schema:
@@ -101,11 +101,11 @@ userRouter.post('/register', userController.create);
  *               properties:
  *                 token:
  *                   type: string
- *                   description: Token JWT para autenticación
+ *                   description: JWT token for authentication
  *       401:
- *         description: Credenciales inválidas
+ *         description: Invalid credentials
  *       404:
- *         description: Usuario no encontrado
+ *         description: User not found
  */
 userRouter.post('/login', userController.login);
 
@@ -113,19 +113,19 @@ userRouter.post('/login', userController.login);
  * @swagger
  * /auth/profile:
  *   get:
- *     summary: Obtener el perfil del usuario actual
- *     tags: [Usuario]
+ *     summary: Get current user's profile
+ *     tags: [User]
  *     security:
  *       - bearerAuth: []
  *     responses:
  *       200:
- *         description: Perfil del usuario obtenido exitosamente
+ *         description: User profile successfully retrieved
  *         content:
  *           application/json:
  *             schema:
  *               $ref: '#/components/schemas/User'
  *       401:
- *         description: No autorizado
+ *         description: Unauthorized
  */
 userRouter.get('/profile', authMiddleware, userController.getProfile);
 
@@ -133,13 +133,13 @@ userRouter.get('/profile', authMiddleware, userController.getProfile);
  * @swagger
  * /auth/refresh-token:
  *   post:
- *     summary: Refrescar el token de autenticación
- *     tags: [Autenticación]
+ *     summary: Refresh authentication token
+ *     tags: [Authentication]
  *     security:
  *       - bearerAuth: []
  *     responses:
  *       200:
- *         description: Token refrescado exitosamente
+ *         description: Token successfully refreshed
  *         content:
  *           application/json:
  *             schema:
@@ -147,9 +147,9 @@ userRouter.get('/profile', authMiddleware, userController.getProfile);
  *               properties:
  *                 token:
  *                   type: string
- *                   description: Nuevo token JWT
+ *                   description: New JWT token
  *       401:
- *         description: Token inválido o expirado
+ *         description: Invalid or expired token
  */
 userRouter.post('/refresh-token', authMiddleware, userController.refreshToken);
 

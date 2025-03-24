@@ -25,7 +25,7 @@ export const authMiddleware = (req: AuthRequest, res: Response, next: NextFuncti
 
     const token = parts[1];
     
-    // Verificar el token
+    // Verify the token
     const decoded = tokenService.verifyToken(token);
     if (!decoded) {
       res.status(401).json({ error: 'Invalid token' });

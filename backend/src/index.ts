@@ -8,14 +8,14 @@ import * as functions from 'firebase-functions';
 import swaggerUi from 'swagger-ui-express';
 import { swaggerSpec } from './config/swagger';
 
-// Cargar variables de entorno según el ambiente
+// Load environment variables based on the environment
 const envFile = process.env.NODE_ENV === 'production' ? '.env.production' : '.env';
 dotenv.config({ path: envFile });
 
 const app = express();
 const port = process.env.SERVER_PORT || 5000;
 
-// Configurar middlewares básicos
+// Configure basic middlewares
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cors({
@@ -25,19 +25,19 @@ app.use(cors({
   allowedHeaders: ['Origin', 'X-Requested-With', 'Content-Type', 'Accept', 'Authorization'],
 }));
 
-// Configurar Swagger UI
+// Configure Swagger UI
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec, {
   customCss: '.swagger-ui .topbar { display: none }',
-  customSiteTitle: 'API de Atom TODO - Documentación',
+  customSiteTitle: 'Atom TODO API - Documentation',
 }));
 
-// Middleware para logging
+// Middleware for logging
 app.use((req, res, next) => {
   console.log(`${new Date().toISOString()} - ${req.method} ${req.path}`);
   next();
 });
 
-// Ruta de health check
+// Health check route
 app.get('/health', (req, res) => {
   res.json({ 
     status: 'OK', 
@@ -46,56 +46,56 @@ app.get('/health', (req, res) => {
   });
 });
 
-// Inicializar Firebase una sola vez
+// Initialize Firebase only once
 let firebaseInitialized = false;
 try {
   if (!firebaseInitialized) {
     initializeFirebase();
     firebaseInitialized = true;
-    console.log('Firebase inicializado exitosamente en ambiente:', process.env.NODE_ENV);
+    console.log('Firebase successfully initialized in environment:', process.env.NODE_ENV);
   }
 } catch (error) {
-  console.error('Error al inicializar Firebase:', error);
+  console.error('Error initializing Firebase:', error);
 }
 
-// Configurar rutas basadas en el estado de Firebase
+// Configure routes based on Firebase state
 if (firebaseInitialized) {
   app.use('/auth', userRouter);
   app.use('/tasks', taskRouter);
 } else {
   app.use('/*', (req, res) => {
     res.status(503).json({
-      error: 'Servicio no disponible',
-      message: 'Error en la inicialización de Firebase'
+      error: 'Service unavailable',
+      message: 'Error initializing Firebase'
     });
   });
 }
 
-// Manejo de rutas no encontradas
+// Handle routes not found
 app.use((req, res) => {
   res.status(404).json({
-    error: 'No encontrado',
-    message: 'La ruta solicitada no existe'
+    error: 'Not found',
+    message: 'The requested route does not exist'
   });
 });
 
-// Manejo global de errores
+// Global error handling
 app.use((err: any, req: express.Request, res: express.Response, next: express.NextFunction) => {
   console.error('Error:', err);
   res.status(err.status || 500).json({
-    error: 'Error interno del servidor',
-    message: process.env.NODE_ENV === 'development' ? err.message : 'Ocurrió un error inesperado'
+    error: 'Internal server error',
+    message: process.env.NODE_ENV === 'development' ? err.message : 'An unexpected error occurred'
   });
 });
 
-// Exportar la función para Firebase Functions
+// Export the function for Firebase Functions
 export const api = functions.https.onRequest(app);
 
-// Iniciar el servidor local si no estamos en Firebase Functions ni en despliegue
+// Start the local server if we are not in Firebase Functions or deployment
 if (!process.env.FUNCTION_TARGET && !process.env.FIREBASE_CONFIG) {
   app.listen(port, () => {
-    console.log(`Servidor iniciado en el puerto ${port} en modo ${process.env.NODE_ENV}`);
-    console.log(`Estado de Firebase: ${firebaseInitialized ? 'Inicializado' : 'No inicializado'}`);
-    console.log(`Documentación disponible en: http://localhost:${port}/api-docs`);
+    console.log(`Server started on port ${port} in ${process.env.NODE_ENV} mode`);
+    console.log(`Firebase status: ${firebaseInitialized ? 'Initialized' : 'Not initialized'}`);
+    console.log(`Documentation available at: http://localhost:${port}/api-docs`);
   });
 } 

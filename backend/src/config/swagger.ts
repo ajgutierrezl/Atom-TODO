@@ -4,16 +4,16 @@ const options = {
   definition: {
     openapi: '3.0.0',
     info: {
-      title: 'API de Atom TODO',
+      title: 'Atom TODO API',
       version: '1.0.0',
-      description: 'Documentación de la API de Atom TODO',
+      description: 'Documentation for Atom TODO API',
     },
     servers: [
       {
         url: process.env.NODE_ENV === 'production' 
           ? 'https://atom-c184a.web.app/api' 
           : `http://localhost:${process.env.SERVER_PORT || 5000}`,
-        description: process.env.NODE_ENV === 'production' ? 'Servidor de producción' : 'Servidor de desarrollo',
+        description: process.env.NODE_ENV === 'production' ? 'Production server' : 'Development server',
       },
     ],
     components: {
@@ -29,7 +29,7 @@ const options = {
       bearerAuth: [],
     }],
   },
-  apis: ['./src/routes/*.ts'], // Rutas donde buscar los comentarios de la documentación
+  apis: ['./src/routes/*.ts'], // Routes where to look for documentation comments
 };
 
 export const swaggerSpec = swaggerJsdoc(options); 

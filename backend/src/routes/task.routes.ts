@@ -17,40 +17,40 @@ const taskController = new TaskController();
  *       properties:
  *         id:
  *           type: string
- *           description: ID único de la tarea
+ *           description: Unique ID of the task
  *         title:
  *           type: string
- *           description: Título de la tarea
+ *           description: Title of the task
  *         description:
  *           type: string
- *           description: Descripción detallada de la tarea
+ *           description: Detailed description of the task
  *         completed:
  *           type: boolean
- *           description: Estado de completitud de la tarea
+ *           description: Completion status of the task
  *         userId:
  *           type: string
- *           description: ID del usuario propietario de la tarea
+ *           description: ID of the user who owns the task
  *         createdAt:
  *           type: string
  *           format: date-time
- *           description: Fecha de creación de la tarea
+ *           description: Task creation date
  *         updatedAt:
  *           type: string
  *           format: date-time
- *           description: Fecha de última actualización de la tarea
+ *           description: Task last update date
  */
 
 /**
  * @swagger
  * /tasks:
  *   get:
- *     summary: Obtener todas las tareas del usuario
- *     tags: [Tareas]
+ *     summary: Get all tasks for the user
+ *     tags: [Tasks]
  *     security:
  *       - bearerAuth: []
  *     responses:
  *       200:
- *         description: Lista de tareas obtenida exitosamente
+ *         description: Task list successfully retrieved
  *         content:
  *           application/json:
  *             schema:
@@ -58,7 +58,7 @@ const taskController = new TaskController();
  *               items:
  *                 $ref: '#/components/schemas/Task'
  *       401:
- *         description: No autorizado
+ *         description: Unauthorized
  */
 router.get('/', authMiddleware, taskController.getTasks);
 
@@ -66,8 +66,8 @@ router.get('/', authMiddleware, taskController.getTasks);
  * @swagger
  * /tasks/{id}:
  *   get:
- *     summary: Obtener una tarea por ID
- *     tags: [Tareas]
+ *     summary: Get a task by ID
+ *     tags: [Tasks]
  *     security:
  *       - bearerAuth: []
  *     parameters:
@@ -76,16 +76,16 @@ router.get('/', authMiddleware, taskController.getTasks);
  *         required: true
  *         schema:
  *           type: string
- *         description: ID de la tarea
+ *         description: Task ID
  *     responses:
  *       200:
- *         description: Tarea encontrada
+ *         description: Task found
  *         content:
  *           application/json:
  *             schema:
  *               $ref: '#/components/schemas/Task'
  *       404:
- *         description: Tarea no encontrada
+ *         description: Task not found
  */
 router.get('/:id', authMiddleware, taskController.getTask);
 
@@ -93,8 +93,8 @@ router.get('/:id', authMiddleware, taskController.getTask);
  * @swagger
  * /tasks:
  *   post:
- *     summary: Crear una nueva tarea
- *     tags: [Tareas]
+ *     summary: Create a new task
+ *     tags: [Tasks]
  *     security:
  *       - bearerAuth: []
  *     requestBody:
@@ -108,19 +108,19 @@ router.get('/:id', authMiddleware, taskController.getTask);
  *             properties:
  *               title:
  *                 type: string
- *                 description: Título de la tarea
+ *                 description: Title of the task
  *               description:
  *                 type: string
- *                 description: Descripción de la tarea
+ *                 description: Description of the task
  *     responses:
  *       201:
- *         description: Tarea creada exitosamente
+ *         description: Task successfully created
  *         content:
  *           application/json:
  *             schema:
  *               $ref: '#/components/schemas/Task'
  *       400:
- *         description: Datos inválidos
+ *         description: Invalid data
  */
 router.post('/', authMiddleware, taskController.createTask);
 
@@ -128,8 +128,8 @@ router.post('/', authMiddleware, taskController.createTask);
  * @swagger
  * /tasks/{id}:
  *   put:
- *     summary: Actualizar una tarea
- *     tags: [Tareas]
+ *     summary: Update a task
+ *     tags: [Tasks]
  *     security:
  *       - bearerAuth: []
  *     parameters:
@@ -138,7 +138,7 @@ router.post('/', authMiddleware, taskController.createTask);
  *         required: true
  *         schema:
  *           type: string
- *         description: ID de la tarea
+ *         description: Task ID
  *     requestBody:
  *       required: true
  *       content:
@@ -148,22 +148,22 @@ router.post('/', authMiddleware, taskController.createTask);
  *             properties:
  *               title:
  *                 type: string
- *                 description: Nuevo título de la tarea
+ *                 description: New title for the task
  *               description:
  *                 type: string
- *                 description: Nueva descripción de la tarea
+ *                 description: New description for the task
  *               completed:
  *                 type: boolean
- *                 description: Nuevo estado de completitud
+ *                 description: New completion status
  *     responses:
  *       200:
- *         description: Tarea actualizada exitosamente
+ *         description: Task successfully updated
  *         content:
  *           application/json:
  *             schema:
  *               $ref: '#/components/schemas/Task'
  *       404:
- *         description: Tarea no encontrada
+ *         description: Task not found
  */
 router.put('/:id', authMiddleware, taskController.updateTask);
 
@@ -171,8 +171,8 @@ router.put('/:id', authMiddleware, taskController.updateTask);
  * @swagger
  * /tasks/{id}:
  *   delete:
- *     summary: Eliminar una tarea
- *     tags: [Tareas]
+ *     summary: Delete a task
+ *     tags: [Tasks]
  *     security:
  *       - bearerAuth: []
  *     parameters:
@@ -181,12 +181,12 @@ router.put('/:id', authMiddleware, taskController.updateTask);
  *         required: true
  *         schema:
  *           type: string
- *         description: ID de la tarea a eliminar
+ *         description: ID of the task to delete
  *     responses:
  *       200:
- *         description: Tarea eliminada exitosamente
+ *         description: Task successfully deleted
  *       404:
- *         description: Tarea no encontrada
+ *         description: Task not found
  */
 router.delete('/:id', authMiddleware, taskController.deleteTask);
 

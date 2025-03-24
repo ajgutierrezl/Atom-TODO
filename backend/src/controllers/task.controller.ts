@@ -16,7 +16,7 @@ export class TaskController {
     try {
       const userId = req.user?.sub;
       if (!userId) {
-        res.status(401).json({ error: 'Usuario no autorizado' });
+        res.status(401).json({ error: 'Unauthorized user' });
         return;
       }
 
@@ -42,26 +42,26 @@ export class TaskController {
       const taskId = req.params.id;
       
       if (!userId) {
-        res.status(401).json({ error: 'Usuario no autorizado' });
+        res.status(401).json({ error: 'Unauthorized user' });
         return;
       }
 
       if (!taskId) {
-        res.status(400).json({ error: 'ID de tarea requerido' });
+        res.status(400).json({ error: 'Task ID required' });
         return;
       }
 
       const task = await this.taskService.findById(taskId, userId);
       
       if (!task) {
-        res.status(404).json({ error: 'Tarea no encontrada' });
+        res.status(404).json({ error: 'Task not found' });
         return;
       }
 
       res.status(200).json(task);
     } catch (error) {
-      console.error('Error al obtener tarea:', error);
-      res.status(500).json({ error: 'Error interno del servidor' });
+      console.error('Error getting task:', error);
+      res.status(500).json({ error: 'Internal server error' });
     }
   };
 
@@ -71,12 +71,12 @@ export class TaskController {
       const taskData = req.body as TaskDTO;
       
       if (!userId) {
-        res.status(401).json({ error: 'Usuario no autorizado' });
+        res.status(401).json({ error: 'Unauthorized user' });
         return;
       }
 
       if (!taskData.title) {
-        res.status(400).json({ error: 'El título es requerido' });
+        res.status(400).json({ error: 'Title is required' });
         return;
       }
 
@@ -87,8 +87,8 @@ export class TaskController {
 
       res.status(201).json(newTask);
     } catch (error) {
-      console.error('Error al crear tarea:', error);
-      res.status(500).json({ error: 'Error interno del servidor' });
+      console.error('Error creating task:', error);
+      res.status(500).json({ error: 'Internal server error' });
     }
   };
 
@@ -99,26 +99,26 @@ export class TaskController {
       const taskData = req.body as Partial<TaskDTO>;
       
       if (!userId) {
-        res.status(401).json({ error: 'Usuario no autorizado' });
+        res.status(401).json({ error: 'Unauthorized user' });
         return;
       }
 
       if (!taskId) {
-        res.status(400).json({ error: 'ID de tarea requerido' });
+        res.status(400).json({ error: 'Task ID required' });
         return;
       }
 
       const updatedTask = await this.taskService.update(taskId, userId, taskData);
       
       if (!updatedTask) {
-        res.status(404).json({ error: 'Tarea no encontrada' });
+        res.status(404).json({ error: 'Task not found' });
         return;
       }
 
       res.status(200).json(updatedTask);
     } catch (error) {
-      console.error('Error al actualizar tarea:', error);
-      res.status(500).json({ error: 'Error interno del servidor' });
+      console.error('Error updating task:', error);
+      res.status(500).json({ error: 'Internal server error' });
     }
   };
 
@@ -128,26 +128,26 @@ export class TaskController {
       const taskId = req.params.id;
       
       if (!userId) {
-        res.status(401).json({ error: 'Usuario no autorizado' });
+        res.status(401).json({ error: 'Unauthorized user' });
         return;
       }
 
       if (!taskId) {
-        res.status(400).json({ error: 'ID de tarea requerido' });
+        res.status(400).json({ error: 'Task ID required' });
         return;
       }
 
       const deleted = await this.taskService.delete(taskId, userId);
       
       if (!deleted) {
-        res.status(404).json({ error: 'Tarea no encontrada' });
+        res.status(404).json({ error: 'Task not found' });
         return;
       }
 
       res.status(204).send();
     } catch (error) {
-      console.error('Error al eliminar tarea:', error);
-      res.status(500).json({ error: 'Error interno del servidor' });
+      console.error('Error deleting task:', error);
+      res.status(500).json({ error: 'Internal server error' });
     }
   };
 } 
