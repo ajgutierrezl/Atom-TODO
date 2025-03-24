@@ -4,7 +4,7 @@ import { User } from '../models/user.model';
 
 dotenv.config();
 
-// Asegúrate de que siempre hay un valor de fallback
+// Ensure there is always a fallback value
 const JWT_SECRET = process.env.JWT_SECRET || 'default_jwt_secret_change_this';
 const JWT_EXPIRES_IN = process.env.JWT_EXPIRES_IN || '1d';
 
@@ -16,7 +16,7 @@ export class TokenService {
       iat: Math.floor(Date.now() / 1000)
     };
 
-    // Usando any para evitar problemas de tipo
+    // Using any to avoid type issues
     return jwt.sign(payload, JWT_SECRET, { expiresIn: JWT_EXPIRES_IN } as any);
   }
 

@@ -120,13 +120,13 @@ html, body {
   }
 }
 
-// Mejoras generales de accesibilidad
+// General improvements of accessibility
 :focus {
   outline: 2px solid #3f51b5 !important;
   outline-offset: 2px !important;
 }
 
-// Transiciones suaves para toda la aplicación
+// Smooth transitions for the entire application
 .mat-mdc-card,
 .mat-mdc-button,
 .mat-mdc-checkbox,
@@ -134,7 +134,7 @@ html, body {
   transition: all 0.3s ease !important;
 }
 
-// Soporte para modo oscuro automático (preferencias del sistema)
+// Support for automatic dark mode (system preferences)
 @media (prefers-color-scheme: dark) {
   body:not(.light-theme) {
     background-color: #303030;
@@ -151,7 +151,7 @@ html, body {
   }
 }
 
-// Mejoras para los selectores de Material
+// Improvements for Material selectors
 .mat-mdc-select-panel {
   min-width: 200px !important;
 }
@@ -194,7 +194,7 @@ html, body {
   }
 }
 
-// Colores de prioridad
+// Priority colors
 .priority-high {
   color: #f44336 !important;
 }

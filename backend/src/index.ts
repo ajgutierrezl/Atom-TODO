@@ -8,14 +8,14 @@ import * as functions from 'firebase-functions';
 import swaggerUi from 'swagger-ui-express';
 import { swaggerSpec } from './config/swagger';
 
-// Cargar variables de entorno según el ambiente
+// Load environment variables based on the environment
 const envFile = process.env.NODE_ENV === 'production' ? '.env.production' : '.env';
 dotenv.config({ path: envFile });
 
 const app = express();
 const port = process.env.SERVER_PORT || 5000;
 
-// Configurar middlewares básicos
+// Configure basic middlewares
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cors({
@@ -25,10 +25,10 @@ app.use(cors({
   allowedHeaders: ['Origin', 'X-Requested-With', 'Content-Type', 'Accept', 'Authorization'],
 }));
 
-// Configurar Swagger UI
+// Configure Swagger UI
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec, {
   customCss: '.swagger-ui .topbar { display: none }',
-  customSiteTitle: 'API de Atom TODO - Documentación',
+  customSiteTitle: 'API de Atom TODO - Documentation',
 }));
 
 // Middleware para logging
@@ -46,7 +46,7 @@ app.get('/health', (req, res) => {
   });
 });
 
-// Inicializar Firebase una sola vez
+// Initialize Firebase once
 let firebaseInitialized = false;
 try {
   if (!firebaseInitialized) {
@@ -58,7 +58,7 @@ try {
   console.error('Error al inicializar Firebase:', error);
 }
 
-// Configurar rutas basadas en el estado de Firebase
+// Configure routes based on Firebase state
 if (firebaseInitialized) {
   app.use('/auth', userRouter);
   app.use('/tasks', taskRouter);
@@ -71,11 +71,11 @@ if (firebaseInitialized) {
   });
 }
 
-// Manejo de rutas no encontradas
+// Handle routes not found
 app.use((req, res) => {
   res.status(404).json({
-    error: 'No encontrado',
-    message: 'La ruta solicitada no existe'
+    error: 'Not found',
+    message: 'The requested route does not exist'
   });
 });
 
@@ -88,10 +88,10 @@ app.use((err: any, req: express.Request, res: express.Response, next: express.Ne
   });
 });
 
-// Exportar la función para Firebase Functions
+// Export the function for Firebase Functions
 export const api = functions.https.onRequest(app);
 
-// Iniciar el servidor local si no estamos en Firebase Functions ni en despliegue
+// Start the local server if we're not in Firebase Functions or deployment
 if (!process.env.FUNCTION_TARGET && !process.env.FIREBASE_CONFIG) {
   app.listen(port, () => {
     console.log(`Servidor iniciado en el puerto ${port} en modo ${process.env.NODE_ENV}`);

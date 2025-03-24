@@ -5,11 +5,11 @@ import { authMiddleware } from '../middleware/auth.middleware';
 const authRouter = Router();
 const userController = new UserController();
 
-// Rutas públicas
+// Public routes
 authRouter.post('/login', userController.login);
 authRouter.post('/register', userController.create);
 
-// Rutas protegidas
+// Protected routes
 authRouter.get('/profile', authMiddleware, userController.getProfile);
 authRouter.post('/refresh-token', authMiddleware, userController.refreshToken);
 

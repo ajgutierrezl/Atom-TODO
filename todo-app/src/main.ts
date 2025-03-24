@@ -4,10 +4,10 @@ import { AppComponent } from './app/app.component';
 import { platformBrowserDynamic } from '@angular/platform-browser-dynamic';
 import { AppModule } from './app/app.module';
 
-// Para aplicaciones standalone
+// For standalone applications
 // bootstrapApplication(AppComponent, appConfig)
 //   .catch((err) => console.error(err));
 
-// Para aplicaciones basadas en módulos
+// For module-based applications
 platformBrowserDynamic().bootstrapModule(AppModule)
   .catch(err => console.error(err));

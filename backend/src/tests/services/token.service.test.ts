@@ -1,4 +1,4 @@
-// Mockeamos jwt si es necesario
+// Mock jwt if necessary
 jest.mock('jsonwebtoken', () => {
   return {
     sign: jest.fn().mockImplementation(() => 'mocked-token'),
@@ -17,7 +17,7 @@ jest.mock('jsonwebtoken', () => {
   };
 });
 
-// Ahora importamos los componentes reales
+// Now import the real components
 import { TokenService } from '../../services/token.service';
 import { User } from '../../models/user.model';
 import jwt from 'jsonwebtoken';
@@ -27,7 +27,7 @@ describe('TokenService', () => {
   let mockUser: User;
 
   beforeEach(() => {
-    // Limpiar mocks antes de cada test
+    // Clean mocks before each test
     jest.clearAllMocks();
     
     tokenService = new TokenService();

@@ -12,17 +12,17 @@ export class TaskService {
         .where('userId', '==', userId)
         .orderBy('createdAt', 'desc');
 
-      // Si hay término de búsqueda, agregamos el filtro
+      // If there is a search term, add the filter
       if (search) {
         query = query.where('title', '>=', search)
                     .where('title', '<=', search + '\uf8ff');
       }
 
-      // Obtener el total de documentos
+      // Get the total number of documents
       const totalSnapshot = await query.count().get();
       const total = totalSnapshot.data().count;
 
-      // Aplicar paginación
+      // Apply pagination
       const snapshot = await query
         .offset(page * limit)
         .limit(limit)

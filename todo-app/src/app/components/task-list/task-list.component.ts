@@ -128,13 +128,13 @@ export class TaskListComponent implements OnInit, OnDestroy {
 
     return tasks.sort((a, b) => {
       if (a.completed === b.completed) {
-        // Ordenar por prioridad (alto a bajo)
-        // Usar 'medium' como valor por defecto si no existe la prioridad
+        // Sort by priority (high to low)
+        // Use 'medium' as default value if priority doesn't exist
         const priorityA = a.priority ? priorityWeight[a.priority] : priorityWeight['medium'];
         const priorityB = b.priority ? priorityWeight[b.priority] : priorityWeight['medium'];
         
         if (priorityA === priorityB) {
-          // Si la prioridad es igual, ordenar por fecha
+          // If priority is equal, sort by date
           const timestampA = a.createdAt as FirestoreTimestamp;
           const timestampB = b.createdAt as FirestoreTimestamp;
           return timestampB._seconds - timestampA._seconds;
@@ -147,7 +147,7 @@ export class TaskListComponent implements OnInit, OnDestroy {
   }
 
   changeSortOption(option: 'date' | 'priority' | any): void {
-    // Asegurar que la opción recibida es válida
+    // Ensure the received option is valid
     const validOption = option === 'date' || option === 'priority' ? option : 'date';
     this.sortOption = validOption;
     this.loadTasks();

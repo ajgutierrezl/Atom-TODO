@@ -1,4 +1,4 @@
-// Mocks para los métodos del TaskService
+// Mocks for the TaskService methods
 const mockFindAll = jest.fn();
 const mockFindById = jest.fn();
 const mockCreate = jest.fn();
@@ -20,7 +20,7 @@ jest.mock('../../services/task.service', () => {
   };
 });
 
-// Ahora importamos después de mockar
+// Now import after mocking
 import { Response } from 'express';
 import { TaskController } from '../../controllers/task.controller';
 import { Task } from '../../models/task.model';

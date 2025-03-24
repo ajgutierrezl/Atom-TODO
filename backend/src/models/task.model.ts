@@ -13,7 +13,7 @@ export interface Task extends TaskDTO {
   updatedAt: Date;
 }
 
-// No necesitamos el Schema de Mongoose ya que usamos Firebase
+// We don't need the Mongoose Schema since we're using Firebase
 
 export interface CreateTaskDTO {
   title: string;

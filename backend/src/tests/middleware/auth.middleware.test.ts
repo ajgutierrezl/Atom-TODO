@@ -1,4 +1,4 @@
-// Primero hacemos el mock antes de importar cualquier cosa
+// First we make the mock before importing anything
 const mockVerifyToken = jest.fn();
 
 jest.mock('../../services/token.service', () => {
@@ -11,7 +11,7 @@ jest.mock('../../services/token.service', () => {
   };
 });
 
-// Ahora importamos el resto después de definir los mocks
+// Now we import the rest after defining the mocks
 import { Response, NextFunction } from 'express';
 import { authMiddleware, optionalAuthMiddleware, AuthRequest } from '../../middleware/auth.middleware';
 

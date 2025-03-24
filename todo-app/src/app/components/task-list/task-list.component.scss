@@ -7,11 +7,11 @@ $text-dark: #333;
 $text-medium: #666;
 $text-light: #757575;
 
-// Gradientes
+// Gradients
 $primary-gradient: linear-gradient(90deg, $primary-color, $primary-light);
 $background-gradient: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
 
-// Espaciado
+// Spacing
 $spacing: (
   xs: 4px,
   sm: 8px,
@@ -48,7 +48,7 @@ $shadow-lg: 0 8px 16px rgba(0, 0, 0, 0.16);
   }
 }
 
-// Estilos base
+// Base styles
 .task-list-container {
   display: flex;
   flex-direction: column;
@@ -57,7 +57,7 @@ $shadow-lg: 0 8px 16px rgba(0, 0, 0, 0.16);
   background-image: $background-gradient;
 }
 
-// Toolbar y navegación
+// Toolbar and navigation
 .app-toolbar {
   position: sticky;
   top: 0;
@@ -75,7 +75,7 @@ $shadow-lg: 0 8px 16px rgba(0, 0, 0, 0.16);
   height: 64px;
 }
 
-// Componentes comunes
+// Common components
 %icon-base {
   margin-right: map-get($spacing, sm);
   color: white;
@@ -87,7 +87,7 @@ $shadow-lg: 0 8px 16px rgba(0, 0, 0, 0.16);
   @extend %icon-base;
 }
 
-// Cards y contenedores
+// Cards and containers
 .task-card,
 .stat-item {
   @include card-hover;
@@ -95,7 +95,7 @@ $shadow-lg: 0 8px 16px rgba(0, 0, 0, 0.16);
   border-radius: 8px;
 }
 
-// Contenido principal
+// Main content
 .content-container {
   @include responsive-padding;
   max-width: 1200px;
@@ -104,7 +104,7 @@ $shadow-lg: 0 8px 16px rgba(0, 0, 0, 0.16);
   animation: fadeIn 0.5s ease-out;
 }
 
-// Grid de tareas
+// Tasks grid
 .tasks-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
@@ -112,7 +112,7 @@ $shadow-lg: 0 8px 16px rgba(0, 0, 0, 0.16);
   margin-bottom: map-get($spacing, xl);
 }
 
-// Estados y mensajes
+// States and messages
 .error-message,
 .empty-state {
   text-align: center;
@@ -160,7 +160,7 @@ $shadow-lg: 0 8px 16px rgba(0, 0, 0, 0.16);
   }
 }
 
-// Animaciones
+// Animations
 @keyframes fadeIn {
   from { 
     opacity: 0; 
